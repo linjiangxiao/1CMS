@@ -122,7 +122,11 @@ layui.use(['index','form'],function(){
                     }
                     if (layui.$('#articles tbody tr').length==0)
                     {
-                        layui.admin.events.reload();
+                        if(layui.$('#cms-pagelist .pagelist a').length>1 && layui.$('#cms-pagelist .pagelist a').last().hasClass('active')){
+                            window.location.href=layui.$('#cms-pagelist .pagelist a').last().prev().attr('href');
+                        }else{
+                            layui.admin.events.reload();
+                        }
                     }
                 }});
             });
