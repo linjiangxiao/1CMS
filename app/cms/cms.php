@@ -188,6 +188,9 @@ class cms {
         array_pop($GLOBALS['C']['running_class']);
         Return true;
     }
+    function nowTemplate($config){
+        return $config;
+    }
     function nowUri() {
         if(isset($GLOBALS['C']['uri'])) {
             Return $GLOBALS['C']['uri'];
@@ -979,6 +982,9 @@ function include_template($template_config) {
             $template_config['nowpath']=$template_config['nowpath'].implode('/',$fileExplode).'/';
         }
         $template_config['filepath']=$template_config['nowpath'].$template_config['file'];
+    }
+    if($template_config_hook=C('cms:nowTemplate',$template_config)){
+        $template_config=$template_config_hook;
     }
     $content=cms_template($template_config);
     if($content===false) {
