@@ -228,6 +228,9 @@ class cms_form {
         if($form['kind']=='info') {
             C('this:form:infoDel',$form['id']);
         }
+        if($form['kind']=='config') {
+            C('cms:config:del',$form['hash'],$form['classhash']);
+        }
         if($form['kind']=='var') {
             $channels_query=array();
             $channels_query['table']='channel';
