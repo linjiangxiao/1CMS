@@ -19,7 +19,10 @@ layui.use(['index'],function(){
         });
         layui.$('#requires td').on('click','button.refresh',function(){
             layui.$(this).find('i').addClass('layui-anim layui-anim-rotate layui-anim-loop');
-            requiresLoad();
+            layui.$('#requires td a').remove();
+            setTimeout(function() {
+                requiresLoad();
+            }, 600);
         });
         function requiresLoad(){
             layui.admin.req({type:'post',url:"?do=shop:adminconfig",data:{ hash: '{$hash}'},async:true,beforeSend:function(){
