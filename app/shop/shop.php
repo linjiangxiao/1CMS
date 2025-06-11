@@ -39,7 +39,7 @@ class shop {
         }
     }
     function index() {
-        if(!function_exists("curl_init") || !ini_get('allow_url_fopen')) {
+        if(!function_exists("curl_init") && !ini_get('allow_url_fopen')) {
             echo('您的主机不支持Curl组件,无法访问应用商店');
             Return ;
         }
