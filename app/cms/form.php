@@ -17,7 +17,7 @@ class cms_form {
             if(!is_hash($classhash)) {Return false;}
             $form_list_query['where']['classhash']=$classhash;
         }
-        $form_list_query['order']='taborder asc,formorder desc,id asc';
+        $form_list_query['order']='formorder desc,id asc';
         $form_list=all($form_list_query);
         $GLOBALS['C']['formlist'][$kind.'|'.$modulehash.'|'.$classhash]=$form_list;
         foreach($form_list as $this_form) {
@@ -31,14 +31,17 @@ class cms_form {
             Return $tabs;
         }
         foreach($form_list as $form) {
-            if(!in_array($form['tabname'],$tabs)) {
-                $tabs[]=$form['tabname'];
+            if(!isset($tabs[$form['tabname']])){
+                $tabs[$form['tabname']]=$form['taborder'];
+            }elseif($form['taborder']<$tabs[$form['tabname']]){
+                $tabs[$form['tabname']]=$form['taborder'];
             }
         }
         if(!count($tabs)){
             return array('默认分组');
         }
-        Return $tabs;
+        asort($tabs);
+        Return array_keys($tabs);
     }
     function get($hash='',$kind='',$modulehash='',$classhash='') {
         $form_query=array();
