@@ -413,7 +413,8 @@ class admin_input {
                 Return '';
             case 'sql':
                 if($config['savetype']==2) {
-                    Return 'decimal(20,6)';
+                    if(!isset($config['decimal'])){ $config['decimal']=6; }
+                    Return 'decimal(20,'.$config['decimal'].')';
                 }
                 Return 'bigint(11)';
             case 'view':
@@ -463,13 +464,21 @@ class admin_input {
                 if($config['savetype']==1) {
                     if(strlen($_POST[$config['name']])==0) {Return '';}
                     Return floor($_POST[$config['name']]);
+                }elseif($config['savetype']==2){
+                    if(!isset($config['decimal'])){ $config['decimal']=6;}
+                    $decimal=explode('.', $_POST[$config['name']]);
+                    if(count($decimal)==2 && strlen(rtrim($decimal[1],'0'))>$config['decimal']){
+                        Return array('error'=>'小数位最长为'.$config['decimal'].'位');
+                    }
+                    Return round($_POST[$config['name']],$config['decimal']);
                 }
                 Return $_POST[$config['name']];
             case 'config':
                 Return array(
-                            array('configname'=>'类型','hash'=>'savetype','inputhash'=>'radio','tips'=>'数字类型保存格式为int(9),金额为decimal(20,6).切换类型会使金额小数位丢失,请提前确认类型','defaultvalue'=>'1','values'=>"1:数字\n2:金额",'savetype'=>1),
+                            array('configname'=>'类型','hash'=>'savetype','inputhash'=>'radio','tips'=>'数字类型保存格式为int(9),金额为decimal(20,x).切换类型会使金额小数位丢失,请提前确认类型','defaultvalue'=>'1','values'=>"1:数字\n2:金额",'savetype'=>1),
                             array('configname'=>'最小值','hash'=>'min','inputhash'=>'number','tips'=>'数字的最小值'),
                             array('configname'=>'最大值','hash'=>'max','inputhash'=>'number','tips'=>'数字的最大值'),
+                            array('configname'=>'小数长度','hash'=>'decimal','inputhash'=>'number','tips'=>'金额格式小数的长度,如设置长度为2,则保存为decimal(20,2)','min'=>1,'max'=>6,'defaultvalue'=>'6'),
                             array('configname'=>'输入框提示','hash'=>'placeholder','inputhash'=>'text','tips'=>'输入框的placeholder'),
                             array('configname'=>'输入框宽度','hash'=>'width','inputhash'=>'text','tips'=>'使用百分比,如:40% 或者 固定宽度如:200px')
                         );
