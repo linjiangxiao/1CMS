@@ -390,6 +390,33 @@ class cms_class {
                     }
                 }
             }
+        }elseif($tables=C('cms:class:config',$classhash,'tables')){
+            $tables=array_filter(explode(';',$tables));
+            $datafile=classDir($classhash).$classhash.'.data.php';
+            if(count($tables) && is_file($datafile)){
+                $content=file_get_contents($datafile);
+                $content=str_replace("<?php if(!defined('1cms')) {exit();}?>","",$content);
+                $alltables=json_decode($content,1);
+                if(isset($alltables['_apptable']) && is_array($alltables['_apptable'])){
+                    foreach($alltables['_apptable'] as $tablename=>$fields) {
+                        if(is_array($fields) && in_array($tablename,$tables)) {
+                            $old_fields=C($GLOBALS['C']['DbClass'].':getfields',$tablename);
+                            if(!$old_fields || !count($old_fields)){
+                                C($GLOBALS['C']['DbClass'].':createTable',$tablename,$fields);
+                            }else{
+                                foreach ($fields as $fieldsname => $fieldtype) {
+                                    $fieldtype=str_replace('()','',$fieldtype);
+                                    if(!isset($old_fields[$fieldsname])){
+                                        C($GLOBALS['C']['DbClass'].':addField',$tablename,$fieldsname,$fieldtype);
+                                    }elseif($old_fields[$fieldsname]['Type']!=$fieldtype){
+                                        C($GLOBALS['C']['DbClass'].':editField',$tablename,$fieldsname,$fieldtype);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         Return true;
     }
@@ -407,10 +434,6 @@ class cms_class {
             $tables=json_decode($content,1);
             if(is_array($tables)){ 
                 C('this:class:installTable',$classhash);
-                $selftables=C($classhash.':table');
-                if(!is_array($selftables)){
-                    $selftables=array();
-                }
                 if(isset($tables['config'])){
                     $forms=array();
                     $channels=array();
@@ -430,6 +453,9 @@ class cms_class {
                     }
                 }
                 foreach ($tables as $key => $table) {
+                    if(substr($key,0,1)==='_'){
+                         continue;
+                    }
                     foreach ($table as $data) {
                         if($key=='config' || $key=='module' || $key=='input' || $key=='form' || $key=='route' || $key=='hook' || $key=='auth' || $key=='role'){
                             unset($data['id']);
@@ -631,6 +657,22 @@ class cms_class {
                 }
             }
         }
+        if($tables=C('cms:class:config',$classhash,'tables')){
+            $tables=array_filter(explode(';',$tables));
+            $datafile=classDir($classhash).$classhash.'.data.php';
+            if(count($tables) && is_file($datafile)){
+                $content=file_get_contents($datafile);
+                $content=str_replace("<?php if(!defined('1cms')) {exit();}?>","",$content);
+                $alltables=json_decode($content,1);
+                if(isset($alltables['_apptable']) && is_array($alltables['_apptable'])){
+                    foreach($alltables['_apptable'] as $tablename=>$table) {
+                        if(is_array($table) && !isset($systemTable[$tablename]) && in_array($tablename,$tables)) {
+                            C($GLOBALS['C']['DbClass'].':delTable',$tablename);
+                        }
+                    }
+                }
+            }
+        }
         Return true;
     }
     function changeClassConfig($classhash,$enabled) {
@@ -801,6 +843,22 @@ class cms_class {
             if(count($classTables)){
                 foreach ($classTables as $key => $classTable){
                     $data[$key]=all('table',$key);
+                }
+            }
+        }elseif($classTables=C('cms:class:config',$classhash,'tables')){
+            $classTables=array_filter(explode(';',$classTables));
+            if(count($classTables)){
+                $data['_apptable']=array();
+                foreach ($classTables as $classTable){
+                    $tablefields=C($GLOBALS['C']['DbClass'].':getfields',$classTable);
+                    if(count($tablefields)){
+                        $data['_apptable'][$classTable]=array();
+                        foreach ($tablefields as $fieldname => $field) {
+                            $data['_apptable'][$classTable][$fieldname]=$field['Type'];
+                        }
+                        $data[$classTable]=all('table',$classTable);
+                    }
+                    
                 }
             }
         }
