@@ -82,10 +82,10 @@ class cms_install {
             $cmsversion='';
         }
         $array['version']=$cmsversion;
-        $array['infos'][]=array('name'=>'1CMS版本','value'=>$cmsversion);
         if(!isset($_SERVER['SERVER_SOFTWARE'])) {$_SERVER['SERVER_SOFTWARE']='未知';}
         $array['infos'][]=array('name'=>'Web服务器','value'=>htmlspecialchars($_SERVER['SERVER_SOFTWARE']));
         $array['infos'][]=array('name'=>'PHP版本','value'=>PHP_VERSION);
+        $array['infos'][]=array('name'=>'CMS版本','value'=>$cmsversion);
         if(!function_exists('get_loaded_extensions')) {
             $array['infos'][]=array('name'=>'get_loaded_extensions','value'=>'函数被禁用,无法检测安装环境','error'=>1);
             $array['allow']=false;
@@ -133,16 +133,16 @@ class cms_install {
         }
         if(stripos($_SERVER['SERVER_SOFTWARE'],'nginx')!==false) {
             $array['nginx']=1;
+            if(@ini_get('cgi.fix_pathinfo')==1){
+                $array['nginx']=0;
+            }
         }else {
             $array['nginx']=0;
         }
+        $installDefaultSetting=C('this:install:installDefaultSetting');
+        $array=array_merge($array,$installDefaultSetting);
         if(C('this:install:extTest','pdo_sqlite')) {
             $array['sqlite']=1;
-            if(isset($_SERVER['DbInfo_file']) && $_SERVER['DbInfo_file']) {
-                $array['sqlitefilename']=$_SERVER['DbInfo_file'];
-            }else {
-                $array['sqlitefilename']='db_'.substr(md5(dirname(__FILE__).date('ymdH').server_name().@$_SERVER['HTTP_USER_AGENT']),0,16);
-            }
             $array['sqlitefile']='/'.$array['sqlitefilename'].'.db';
             $array['sqliteinfo']='';
             if(!C('this:install:sqliteTest',$array['sqlitefilename'].'.db')) {
@@ -171,10 +171,122 @@ class cms_install {
         if(!$array['classlist']){
             $array['allow']=false;
         }
-        if(!isset($GLOBALS['C']['installTitle']) || empty($GLOBALS['C']['installTitle'])){
-            $GLOBALS['C']['installTitle']='1CMS 安装';
-        }
         V('install',$array);
+    }
+    function installDefaultSetting(){
+        if(isset($GLOBALS['install']['database']) && $GLOBALS['install']['database']){
+            $array['database']=$GLOBALS['install']['database'];
+        }elseif(getenv('database')){
+            $array['database']=getenv('database');
+        }else{
+            $array['database']='sqlite';
+        }
+        if(isset($GLOBALS['install']['sqlite']) && $GLOBALS['install']['sqlite'] && is_hash($GLOBALS['install']['sqlite'])){
+            $array['sqlitefilename']=$GLOBALS['install']['sqlite'];
+        }elseif(getenv('sqlite') && is_hash(getenv('sqlite'))) {
+            $array['sqlitefilename']=getenv('sqlite');
+        }else {
+            $array['sqlitefilename']='db_'.substr(md5(dirname(__FILE__).date('ymdH').server_name().@$_SERVER['HTTP_USER_AGENT']),0,16);
+        }
+        if(isset($GLOBALS['install']['mysql_host']) && $GLOBALS['install']['mysql_host']){
+            $array['mysql_host']=$GLOBALS['install']['mysql_host'];
+        }elseif(getenv('mysql_host')){
+            $array['mysql_host']=getenv('mysql_host');
+        }else{
+            $array['mysql_host']='127.0.0.1';
+        }
+        if(isset($GLOBALS['install']['mysql_dbname']) && $GLOBALS['install']['mysql_dbname']){
+            $array['mysql_dbname']=$GLOBALS['install']['mysql_dbname'];
+        }elseif(getenv('mysql_dbname')){
+            $array['mysql_dbname']=getenv('mysql_dbname');
+        }else{
+            $array['mysql_dbname']='';
+        }
+        if(isset($GLOBALS['install']['mysql_prefix']) && $GLOBALS['install']['mysql_prefix']){
+            $array['mysql_prefix']=$GLOBALS['install']['mysql_prefix'];
+        }elseif(getenv('mysql_prefix')){
+            $array['mysql_prefix']=getenv('mysql_prefix');
+        }else{
+            $array['mysql_prefix']='';
+        }
+        if(stripos($array['mysql_prefix'],'{rand}')!==false) {
+            $array['mysql_prefix']=str_replace('{rand}',rand(10000000,99999999),$array['mysql_prefix']);
+        }
+        if(isset($GLOBALS['install']['mysql_user']) && $GLOBALS['install']['mysql_user']){
+            $array['mysql_user']=$GLOBALS['install']['mysql_user'];
+        }elseif(getenv('mysql_user')){
+            $array['mysql_user']=getenv('mysql_user');
+        }else{
+            $array['mysql_user']='root';
+        }
+        if(isset($GLOBALS['install']['mysql_password']) && $GLOBALS['install']['mysql_password']){
+            $array['mysql_password']=$GLOBALS['install']['mysql_password'];
+        }elseif(getenv('mysql_password')){
+            $array['mysql_password']=getenv('mysql_password');
+        }else{
+            $array['mysql_password']='';
+        }
+        if(isset($GLOBALS['install']['mysql_charset']) && $GLOBALS['install']['mysql_charset']){
+            $array['mysql_charset']=$GLOBALS['install']['mysql_charset'];
+        }elseif(getenv('mysql_charset')){
+            $array['mysql_charset']=getenv('mysql_charset');
+        }else{
+            $array['mysql_charset']='utf8mb4';
+        }
+        if(isset($GLOBALS['install']['title']) && $GLOBALS['install']['title']){
+            $array['title']=$GLOBALS['install']['title'];
+        }elseif(isset($GLOBALS['C']['installTitle']) && $GLOBALS['C']['installTitle']){
+            $array['title']=$GLOBALS['C']['installTitle'];
+        }elseif(getenv('installtitle')){
+            $array['title']=getenv('installtitle');
+        }else{
+            $array['title']='1CMS 安装';
+        }
+        if(isset($GLOBALS['install']['admindir']) && $GLOBALS['install']['admindir']){
+            $array['admindir']=$GLOBALS['install']['admindir'];
+        }elseif(isset($GLOBALS['C']['AdminDir']) && $GLOBALS['C']['AdminDir']){
+            $array['admindir']=$GLOBALS['C']['AdminDir'];
+        }elseif(getenv('admindir')){
+            $array['admindir']=getenv('admindir');
+        }else{
+            $array['admindir']='';
+        }
+        if(isset($GLOBALS['install']['userhash']) && $GLOBALS['install']['userhash']){
+            $array['userhash']=$GLOBALS['install']['userhash'];
+        }elseif(getenv('userhash')){
+            $array['userhash']=getenv('userhash');
+        }else{
+            $array['userhash']='';
+        }
+        if(isset($GLOBALS['install']['passwd']) && $GLOBALS['install']['passwd']){
+            $array['passwd']=$GLOBALS['install']['passwd'];
+        }elseif(getenv('passwd')){
+            $array['passwd']=getenv('passwd');
+        }else{
+            $array['passwd']='';
+        }
+        if(isset($GLOBALS['install']['debug'])){
+            $array['debug']=$GLOBALS['install']['debug'];
+        }elseif(getenv('debug')){
+            $array['debug']=getenv('debug');
+        }else{
+            $array['debug']=false;
+        }
+        if(isset($GLOBALS['install']['rewrite'])){
+            $array['rewrite']=$GLOBALS['install']['rewrite'];
+        }elseif(getenv('rewrite')){
+            $array['rewrite']=getenv('rewrite');
+        }else{
+            $array['rewrite']='';
+        }
+        if(isset($GLOBALS['install']['auto'])){
+            $array['auto']=$GLOBALS['install']['auto'];
+        }elseif(getenv('auto')){
+            $array['auto']=getenv('auto');
+        }else{
+            $array['auto']=0;
+        }
+        return $array;
     }
     function classList(){
         if(!function_exists('scandir')) {
