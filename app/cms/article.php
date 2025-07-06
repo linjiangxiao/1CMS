@@ -275,6 +275,17 @@ class cms_article {
         }
         unset($config['key']);
         unset($config['link']);
+
+        foreach($config as $key => $val) {
+            if (is_string($val)) {
+                $config[$key] = str_replace(
+                    array('<','>','"', "'"),
+                    array('&lt;','&gt;','&quot;','&#39;'),
+                    $val
+                );
+            }
+        }
+
         Return insert($config);
     }
     function edit($config) {
@@ -294,6 +305,17 @@ class cms_article {
         unset($config['id']);
         unset($config['key']);
         unset($config['link']);
+        
+        foreach($config as $key => $val) {
+            if (is_string($val)) {
+                $config[$key] = str_replace(
+                    array('<','>','"', "'"),
+                    array('&lt;','&gt;','&quot;','&#39;'),
+                    $val
+                );
+            }
+        }
+        
         Return update($config);
     }
     function move($cid,$ids,$targetcid) {

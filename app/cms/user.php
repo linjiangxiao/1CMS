@@ -44,6 +44,7 @@ class cms_user {
         if(isset($user_add_query['configs']) && is_array($user_add_query['configs'])){
             $user_add_query['configs']=json_encode($user_add_query['configs']);
         }
+        
         Return insert($user_add_query);
     }
     function edit($user_edit_query) {
@@ -97,6 +98,7 @@ class cms_user {
         }else {
             unset($user_edit_query['passwd']);
         }
+
         Return update($user_edit_query);
     }
     function del($hash) {

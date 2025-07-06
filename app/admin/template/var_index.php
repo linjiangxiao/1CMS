@@ -223,7 +223,7 @@ layui.$('#addtab').click(function(){
             }else{
                 stylestr='';
             }
-            layui.element.tabAdd('vartab',{id:"tabsort_"+newid, title: '<i class="layui-icon layui-icon-find-fill sortable-color"'+stylestr+'></i> <span>'+value+'</span>',content:'<table class="layui-table" lay-skin="line" ><colgroup><col><col><col><col></colgroup><thead><tr><th>变量名</th><th class="layui-hide-xs">标识</th><th class="layui-hide-xs">类型</th><th></th></tr> </thead><tbody class="varsort" id="varsort_'+parseInt(Math.random()*(999999-99999+1)+99999,10)+'"></tbody></table>'});
+            layui.element.tabAdd('vartab',{id:"tabsort_"+newid, title: '<i class="layui-icon layui-icon-find-fill sortable-color"'+stylestr+'></i> <span>'+value.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span>',content:'<table class="layui-table" lay-skin="line" ><colgroup><col><col><col><col></colgroup><thead><tr><th>变量名</th><th class="layui-hide-xs">标识</th><th class="layui-hide-xs">类型</th><th></th></tr> </thead><tbody class="varsort" id="varsort_'+parseInt(Math.random()*(999999-99999+1)+99999,10)+'"></tbody></table>'});
             varsortable();
             tabsortreset();
             showmovebutton();
