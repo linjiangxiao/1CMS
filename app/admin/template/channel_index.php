@@ -83,7 +83,7 @@
     layui.use(['index','form','sortable'],function(){
         layui.$('.channeldel').click(function(){
             delid=layui.$(this).parents('tr').attr('rel');
-            layui.layer.confirm('是否删除栏目:'+layui.$(this).parents('tr').attr('data-name').replace('<','&lt;').replace('>','&gt;')+'<br>注意:栏目文章与栏目变量也将被删除!', {
+            layui.layer.confirm('是否删除栏目:'+layui.$(this).parents('tr').attr('data-name').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<br>注意:栏目文章与栏目变量也将被删除!', {
               btn: ['删除','取消'],skin:'layer-danger',title:'请确认',shadeClose:1}, function(){
                 layui.admin.req({type:'post',url:"?do=admin:channel:del",data:{ id: delid},async:true,tips:'删除中...',done: function(res){
                     if (res.error==0)
