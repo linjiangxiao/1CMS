@@ -226,7 +226,7 @@
                   type: 1,
                   move:false,
                   title:'{if $auto}{$title}{else}安装{/if}',
-                  closeBtn: {if $auto}0{else}1{/if},
+                  closeBtn: 0,
                   shadeClose: false,
                   shade: {if $auto}[1, '#fff']{else}0.8{/if},
                   area: layerarea,

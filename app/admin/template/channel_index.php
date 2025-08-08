@@ -34,7 +34,7 @@
             <tr rel="{$channel.id}" data-name="{$channel.channelname}">
                 <td>
                     {if isset($channel.ex)}{$channel.ex}{/if}
-                    <a href="?do=admin:article:home&cid={$channel.id}"><span{if $channel.enabled==0} class="cms-text-disabled"{/if}>{$channel['channelname']}</span></a>
+                    <a href="?do=admin:article:home&cid={$channel.id}"><span{if $channel.enabled==0} class="cms-text-disabled"{/if}>{$channel.channelname}</span></a>
                 </td>
                 {if $auth.channel_edit}<td class="layui-hide-xs">{$channel.id}</td>{/if}
                 {if $auth.module_config}
@@ -84,7 +84,7 @@
         layui.$('.channeldel').click(function(){
             delid=layui.$(this).parents('tr').attr('rel');
             layui.layer.confirm('是否删除栏目:'+layui.$(this).parents('tr').attr('data-name').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<br>注意:栏目文章与栏目变量也将被删除!', {
-            btn: ['删除','取消'],skin:'layer-danger',title:'请确认',shadeClose:1}, function(){
+              btn: ['删除','取消'],skin:'layer-danger',title:'请确认',shadeClose:1}, function(){
                 layui.admin.req({type:'post',url:"?do=admin:channel:del",data:{ id: delid},async:true,tips:'删除中...',done: function(res){
                     if (res.error==0)
                     {
