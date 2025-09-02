@@ -136,6 +136,9 @@ class cms_user {
         if(empty($role_add_query['rolename'])) {
             Return false;
         }
+        if (preg_match('/["\'<>&;=]/',$role_add_query['rolename'])) {
+            return E('角色名称不能包含特殊字符');
+        }
         if(!isset($role_add_query['enabled'])) {
             $role_add_query['enabled']=1;
         }
@@ -157,6 +160,9 @@ class cms_user {
         $role_edit_query['table']='role';
         if(isset($role_edit_query['enabled']) && $role_edit_query['hash']==$this->admin_role  && $role_edit_query['enabled']==0) {
             Return false;
+        }
+        if(isset($role_edit_query['rolename']) && preg_match('/["\'<>&;=]/',$role_edit_query['rolename'])){
+            return E('角色名称不能包含特殊字符');
         }
         if(isset($role_edit_query['classhash']) && !is_hash($role_edit_query['classhash'])) {
             $role_edit_query['classhash']='';
