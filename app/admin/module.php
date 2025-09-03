@@ -148,9 +148,10 @@ class admin_module {
                 }
             }
             return array('msg'=>'增加成功','id'=>$id,'url'=>'?do=admin:module:config&id='.$id,'popup'=>array('btns'=>array('管理'=>array('go'=>'?do=admin:module:config&id='.$id),'返回'=>'back')));
-        }else {
-            Return E('增加失败');
+        }elseif(E()) {
+            Return E(E());
         }
+        Return E('增加失败');
     }
     function config() {
         $array['module']=C('cms:module:get',@$_GET['id']);
@@ -215,6 +216,8 @@ class admin_module {
                 return array('msg'=>'修改成功','popup'=>array('btns'=>array('好的'=>'reload','返回'=>'back')));
             }elseif(is_string($editreturn)) {
                 Return E($editreturn);
+            }elseif(E()) {
+                Return E(E());
             }
             Return E('修改失败');
         }else {

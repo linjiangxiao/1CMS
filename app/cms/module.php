@@ -49,6 +49,9 @@ class cms_module {
         }
         if(!is_hash($module_add_query['classhash'])) {Return false;}
         if(!isset($module_add_query['modulename'])) {Return false;}
+        if (preg_match('/["\'<>&;=\\\\]/',$module_add_query['modulename'])) {
+            return E('模型名不能包含特殊字符');
+        }
         $where=array();
         $where['classhash']=$module_add_query['classhash'];
         $where['modulename']=$module_add_query['modulename'];
@@ -89,6 +92,9 @@ class cms_module {
         unset($module_edit_query['hash']);
         unset($module_edit_query['classhash']);
         if(isset($module_edit_query['modulename'])) {
+            if (preg_match('/["\'<>&;=\\\\]/',$module_edit_query['modulename'])) {
+                return E('模型名不能包含特殊字符');
+            }
             $same_name_where=array();
             $same_name_where['classhash']=$module['classhash'];
             $same_name_where['modulename']=$module_edit_query['modulename'];
