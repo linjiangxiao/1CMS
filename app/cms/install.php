@@ -443,6 +443,9 @@ class cms_install {
             if(is_numeric($_POST['mysql_dbname'])) {
                 Return '数据库名不能为纯数字';
             }
+            if (preg_match('/[.\-\s\'"\\\\\/\*\?:\|;@#\$%&<>]/',$_POST['mysql_dbname'])) {
+                Return '数据库名不能包含特殊符号';
+            }
             if(isset($_POST['mysql_utf8mb4'])) {
                 $GLOBALS['C']['DbInfo']['charset']='utf8mb4';
             }else {

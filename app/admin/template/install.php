@@ -255,6 +255,10 @@
                     layui.view.error('请填写Mysql数据库名');
                     return;
                 }
+                if (/[.\-\s'"\\\/\*\?:|;@#$%&<>]/.test(layui.$('input[name=mysql_dbname]').val())) {
+                    layui.view.error('数据库名不能包含特殊符号');
+                    return;
+                }
                 if (layui.$('input[name=mysql_user]').val()=='')
                 {
                     layui.view.error('请填写Mysql数据库用户名');
