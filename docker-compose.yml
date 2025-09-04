@@ -1,6 +1,7 @@
 services:
   nginx:
     image: nginx:alpine
+    container_name: nginx
     ports:
       - "10099:80"
     volumes:
@@ -13,15 +14,17 @@ services:
 
   php:
     image: 1cms/1cms:fpm74
+    container_name: fpm74
     volumes:
       - ./:/var/www/html
     working_dir: /var/www/html
-    command: sh -c "chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html && php-fpm"
+    command: sh -c "chown -R www-data:www-data /var/www/html && php-fpm"
     networks:
       - 1cms
 
   mysql:
     image: mysql:5.7
+    container_name: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 1cms
