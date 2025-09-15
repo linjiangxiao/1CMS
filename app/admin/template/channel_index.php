@@ -18,7 +18,13 @@
             </div>
           
           <div class="layui-card-body layui-form">
+            
+
+
 {if count($channels)}
+{if isset($home_channel_routes_tips) && $home_channel_routes_tips}
+<blockquote class="layui-elem-quote layui-text"> {$home_channel_routes_tips}</blockquote>
+{/if}
 <table class="layui-table" lay-skin="line"  lay-size1="sm">
          <thead>
           <tr>

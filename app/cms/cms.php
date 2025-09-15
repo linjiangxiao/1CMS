@@ -58,6 +58,35 @@ class cms {
                         }
                     }
                 }
+                if($matched && isset($GLOBALS['C']['GET']['parenturi'])){
+                    $get_parent_uri=$GLOBALS['C']['GET']['parenturi'];
+                    $channel_fid=$channel['fid'];
+                    if(!$channel_fid){
+                        if(!isset($homeChannel)){
+                            $homeChannel=C('this:channel:home',$channel['classhash']);
+                        }
+                        if($homeChannel){
+                            $channel_fid=$homeChannel['id'];
+                        }
+                    }
+                    $this_parent_uri=C('cms:channel:url',$channel_fid);
+                    if(substr($this_parent_uri,0,7)=='http://' || substr($this_parent_uri,0,8)=='https://'){
+                        $parenturi_parse=parse_url($this_parent_uri);
+                        if(isset($parenturi_parse['path'])){
+                            $this_parent_uri=$parenturi_parse['path'];
+                        }
+                    }
+                    if($GLOBALS['C']['MatchUri']===1){
+                        $this_parent_uri=strtolower($this_parent_uri);
+                        $get_parent_uri=strtolower($get_parent_uri);
+                    }
+                    if($get_parent_uri!=$this_parent_uri){
+                        $this_parent_uri=rtrim($this_parent_uri,'/');
+                        if($get_parent_uri!=$this_parent_uri){
+                            $matched=false;
+                        }
+                    }
+                }
                 if($matched) {
                     $GLOBALS['C']['routekey']=$routekey;
                     $channel=C('this:nowChannel',$thisroute['classhash'],$channel);
@@ -196,7 +225,10 @@ class cms {
             Return $GLOBALS['C']['uri'];
         }
         $noarguri=explode('?',$_SERVER['REQUEST_URI']);
-        $uri='/'.ltrim($noarguri[0],'/');
+        if(substr($noarguri[0],0,1)!='/'){
+            $noarguri[0]='/'.$noarguri[0];
+        }
+        $uri=$noarguri[0];
         $uri=substr($uri,strlen($GLOBALS['C']['SystemDir'])-1);
         if(isset($_SERVER['SERVER_SOFTWARE']) && stripos($_SERVER['SERVER_SOFTWARE'],'iis')) {
             $uri=uridecode(urlencode(iconv("gbk","utf-8//IGNORE",$uri)));
@@ -340,6 +372,7 @@ function CMS_init() {
         foreach($GLOBALS['route'] as $routekey=>$route) {
             $ifmatch=true;
             if(isset($route['domain']) && !macthDomain($route['domain'])) {$ifmatch=false;}
+            if(strpos($GLOBALS['C']['uri'],'//')!==false){$ifmatch=false;}
             if($ifmatch==false || (isset($route['uri']) && matchUri($route['uri'])===false)) {
             }else {
                 if(C('cms:initRoute',$routekey)!==false) {
@@ -712,8 +745,11 @@ function rewriteUri($uri) {
 }
 function matchUri($uri) {
     unset($GLOBALS['C']['GET']);
-    if(substr_count($uri,'/')!=substr_count($GLOBALS['C']['uri'],'/')) {
+    if(substr_count($uri,'/')!=substr_count($GLOBALS['C']['uri'],'/') && substr($uri,0,2)!=='./') {
         Return false;
+    }
+    if(substr($uri,0,2)=='./'){
+        $uri='(parenturi)/'.substr($uri,2);
     }
     $uri=uridecode(urlencode($uri));
     if(strpos($uri,')')===false) {
@@ -727,16 +763,18 @@ function matchUri($uri) {
     }
     preg_match_all('/[(](.*)[)]/U',$uri,$getarray);
     if(count($getarray)>0) {
-        $uri=str_replace(array('/','?','($id)','($.id)'),array('\\/','\?','([1-9][0-9]*)','([1-9][0-9]*)'),$uri);
+        $uri=str_replace(array('/','?','($id)','($.id)','(parenturi)'),array('\\/','\?','([1-9][0-9]*)','([1-9][0-9]*)','($*)'),$uri);
         foreach($getarray[0] as $getkey=>$getval) {
             $uri=str_replace($getval,'($+?)',$uri);
         }
-        $uri=str_replace(array('.','($+?)'),array('\.','(.+?)'),$uri);
+        $uri=str_replace(array('.','($+?)','($*)'),array('\.','(.+?)','(.*)'),$uri);
         if($GLOBALS['C']['MatchUri']===1){$i='i';}else{$i='';}
         @preg_match_all('/class-cms-uri-start-'.$uri.'-class-cms-uri-end/'.$i,'class-cms-uri-start-'.$GLOBALS['C']['uri'].'-class-cms-uri-end',$ifmatch);
         if(isset($ifmatch[1][0])) {
             foreach($getarray[1] as $getkey=>$getval) {
-                $GLOBALS['C']['GET'][$getval]=urldecode($ifmatch[1+$getkey][0]);
+                if(isset($ifmatch[1+$getkey][0])){
+                    $GLOBALS['C']['GET'][$getval]=urldecode($ifmatch[1+$getkey][0]);
+                }
             }
             Return true;
         }

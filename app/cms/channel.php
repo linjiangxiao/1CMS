@@ -130,6 +130,26 @@ class cms_channel {
                 $route['uri']=str_replace($getarray[0][$key],$args[$val],$route['uri']);
             }
         }
+        if(substr($route['uri'],0,2)=='./'){
+            $channel_fid=$channel['fid'];
+            if(!$channel_fid){
+                if(!isset($homeChannel)){
+                    $homeChannel=C('this:channel:home',$channel['classhash']);
+                }
+                if($homeChannel){
+                    $channel_fid=$homeChannel['id'];
+                }
+            }
+            $parenturi=C('cms:channel:url',$channel_fid);
+            if(substr($parenturi,0,7)=='http://' || substr($parenturi,0,8)=='https://'){
+                $parenturi_parse=parse_url($parenturi);
+                if(isset($parenturi_parse['path'])){
+                    $parenturi=$parenturi_parse['path'];
+                }
+            }
+            $parenturi=rtrim($parenturi,'/').'/';
+            $route['uri']=$parenturi.substr($route['uri'],2);
+        }
         $route['uri']=rewriteUri($route['uri']);
         if(isset($channel['domain']) && !empty($channel['domain'])) {
             $route['domain']=$channel['domain'];

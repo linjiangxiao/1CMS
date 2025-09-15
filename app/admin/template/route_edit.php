@@ -33,6 +33,7 @@
                             </div>
                             <div class="layui-form-mid layui-btn-container">
                                 <a class="layui-btn layui-btn-sm layui-btn-primary" layadmin-event="change_input" input-name="uri" add-text="/">/</a>
+                                <a class="layui-btn layui-btn-sm layui-btn-primary" layadmin-event="change_input" input-name="uri" add-text="./">./</a>
                                 <a class="layui-btn layui-btn-sm layui-btn-primary" layadmin-event="change_input" input-name="uri" add-text="($.id)">栏目ID</a>
                                 <a class="layui-btn layui-btn-sm layui-btn-primary" layadmin-event="change_input" input-name="uri" add-text="($.channelname)">栏目名</a>
                                 <a class="layui-btn layui-btn-sm layui-btn-primary" layadmin-event="change_input" input-name="uri" add-text="page_(page)">分页</a>

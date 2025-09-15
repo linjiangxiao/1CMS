@@ -46,11 +46,11 @@ class admin_route {
         if(!$class=C('cms:class:get',$module['classhash'])) {
             Return E('应用不存在');
         }
-        if(!C('cms:route:allow',@$_POST['uri'])) {
-            Return E('网址中不允许包含特殊字符');
+        if(substr(@$_POST['uri'],0,1)!='/' && substr(@$_POST['uri'],0,2)!='./'){
+            Return E('网址必须以 / 或 ./ 开头');
         }
-        if(substr(@$_POST['uri'],0,1)!='/'){
-            Return E('网址必须以 / 开头');
+        if(!C('cms:route:allow',@$_POST['uri'])) {
+            Return E('网址格式不正确');
         }
         if(!is_hash(@$_POST['hash'])) {
             Return E('标识错误');
@@ -83,11 +83,11 @@ class admin_route {
         if(!$route=C('cms:route:get',intval($_POST['id']))) {
             Return E('页面不存在');
         }
-        if(!C('cms:route:allow',@$_POST['uri'])) {
-            Return E('网址中不允许包含特殊字符');
+        if(substr(@$_POST['uri'],0,1)!='/' && substr(@$_POST['uri'],0,2)!='./'){
+            Return E('网址必须以 / 或 ./ 开头');
         }
-        if(substr(@$_POST['uri'],0,1)!='/'){
-            Return E('网址必须以 / 开头');
+        if(!C('cms:route:allow',@$_POST['uri'])) {
+            Return E('网址格式不正确');
         }
         if(empty($_POST['classfunction']) && empty($_POST['classview'])) {
             Return E('方法名或模板文件,请填写其中一项');

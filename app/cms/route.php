@@ -175,6 +175,9 @@ class cms_route {
         if(strpos($uri,';')!==false || strpos($uri,'#')!==false || strpos($uri,'"')!==false) {
             Return false;
         }
+        if($uri=='./' || strpos($uri,'./')>0 || substr_count($uri,'./')>1){
+            Return false;
+        }
         if(substr_count($uri,'(')!=substr_count($uri,')')) {
             Return false;
         }
@@ -185,7 +188,7 @@ class cms_route {
             Return $uri;
         }
         $uri=trim($uri);
-        if(substr($uri,0,1)!='/') {
+        if(substr($uri,0,1)!='/' && substr($uri,0,2)!='./') {
             $uri='/'.$uri;
         }
         $uri=str_replace("\\","/",$uri);

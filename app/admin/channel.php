@@ -49,6 +49,18 @@ class admin_channel {
         }else {
             $array['showpage']=0;
             $array['channels']=C('cms:channel:tree',$array['fid'],$array['classinfo']['hash']);
+            if(isset($array['channels'][0]) && P('route:edit')){
+                $home_channel_routes=C('cms:route:all',$array['channels'][0]['modulehash'],$array['channels'][0]['classhash']);
+                $array['home_channel_routes_tips']='';
+                foreach ($home_channel_routes as $home_channel_routes) {
+                    if(substr($home_channel_routes['uri'],0,2)=='./'){
+                        $array['home_channel_routes_tips'].=', <a href="?do=admin:route:edit&id='.$home_channel_routes['id'].'">'.$home_channel_routes['uri'].'</a> ';
+                    }
+                }
+                if($array['home_channel_routes_tips']){
+                    $array['home_channel_routes_tips']='当前应用首页栏目模型('.$array['channels'][0]['modulehash'].')页面网址错误,不能以"./"开头'.$array['home_channel_routes_tips'];
+                }
+            }
         }
         $allowedModules=C('this:channel:allowedModules',$array['classinfo']['hash']);
         foreach($array['channels'] as $this_channel) {
