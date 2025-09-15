@@ -54,7 +54,7 @@
     <td>
     {if count($routes)}
         {loop $routes as $route}
-            <a href="?do=admin:route:edit&id={$route.id}" class="layui-btn  layui-btn-primary layui-btn-sm{if $route.enabled==0} layui-btn-disabled{/if}">{$route.hash}</a>
+            <a href="?do=admin:route:edit&id={$route.id}" class="layui-btn  layui-btn-primary layui-btn-sm{if $route.enabled==0} layui-btn-disabled{/if}">{$route.hash} [{$route.uri}]</a>
         {/loop}
     {else}
         无
