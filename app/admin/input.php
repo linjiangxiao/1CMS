@@ -2874,6 +2874,9 @@ class admin_input {
             case 'post':
                 $config['inputhash']='database';
                 $postvalue=C('cms:input:post',$config);
+                if(is_array($postvalue)){
+                    Return $postvalue;
+                }
                 if(!strlen($postvalue) && !$config['multiple']){
                     $postvalue=0;
                 }
