@@ -412,6 +412,7 @@ class cms_common {
             }
             $content=curl_exec($curl);
             $GLOBALS['C']['curl_info']=curl_getinfo($curl);
+            $GLOBALS['C']['curl_error']=curl_error($curl);
             curl_close($curl);
             if(isset($GLOBALS['C']['curl_info']['http_code']) && $GLOBALS['C']['curl_info']['http_code']>=300) {
                 return E($content);
