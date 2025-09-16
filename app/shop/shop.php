@@ -367,22 +367,42 @@ class shop {
         }
         Return $content;
     }
-    function download($url,$filepath) {
+    function download($urls,$filepath) {
         $hosts=array_merge(explode(';',C('this:defaultHost')),array(config('host')));
-        if($defaulthost=config('defaulthost')) {
+        if($defaulthosts=config('defaulthost')) {
             $hosts=array_merge($hosts,explode(';',$defaulthosts));
         }
-        if(stripos($url,'@')){Return false;}
-        $checkurl=parse_url($url);
-        if(!isset($checkurl['host']) || !in_array($checkurl['host'],$hosts)) {
-            Return false;
-        }
-        if(isset($checkurl['scheme'])){
-            $checkurl['scheme']=strtolower($checkurl['scheme']);
-            if($checkurl['scheme']!='http' && $checkurl['scheme']!='https'){
-                Return false;
+        $urls=explode(';',$urls);
+        foreach ($urls as $url) {
+            if($url){
+                if(stripos($url,'@')){continue;}
+                $checkurl=parse_url($url);
+                if(!isset($checkurl['host'])) {
+                    continue;
+                }
+                if(!in_array($checkurl['host'],$hosts)){
+                    $hostcheck=false;
+                    foreach ($hosts as $host) {
+                        $hostlength=strlen($host)+1;
+                        if(strtolower(substr($checkurl['host'],-$hostlength))=='.'.strtolower($host)){
+                            $hostcheck=true;
+                        }
+                    }
+                    if(!$hostcheck){
+                        continue;
+                    }
+                }
+                if(isset($checkurl['scheme'])){
+                    $checkurl['scheme']=strtolower($checkurl['scheme']);
+                    if($checkurl['scheme']!='http' && $checkurl['scheme']!='https'){
+                        continue;
+                    }
+                }
+                if(C('cms:common:download',$url,$filepath,300,array('CURLOPT_CONNECTTIMEOUT'=>10,'CURLOPT_SSL_VERIFYPEER'=>FALSE,'CURLOPT_SSL_VERIFYHOST'=>FALSE,'CURLOPT_HTTP_VERSION'=>CURL_HTTP_VERSION_1_0,'CURLOPT_POST'=>1,'CURLOPT_POSTFIELDS'=>C('this:shopInfo')))){
+                    return true;
+                }
             }
         }
-        Return C('cms:common:download',$url,$filepath,300,array('CURLOPT_CONNECTTIMEOUT'=>10,'CURLOPT_SSL_VERIFYPEER'=>FALSE,'CURLOPT_SSL_VERIFYHOST'=>FALSE,'CURLOPT_HTTP_VERSION'=>CURL_HTTP_VERSION_1_0,'CURLOPT_POST'=>1,'CURLOPT_POSTFIELDS'=>C('this:shopInfo')));
+        Return false;
     }
 }
