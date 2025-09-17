@@ -2,7 +2,7 @@
 if(!defined('1cms')) {exit();}
 class shop {
     function auth() {
-        Return array('index'=>'浏览商店','downloadClass;installClass;developer'=>'下载应用','upgradeClass;refreshClass'=>'更新应用','adminconfig'=>'显示依赖应用信息');
+        Return array('index'=>'浏览商店','downloadClass;installClass;developer;downloadProgress'=>'下载应用','upgradeClass;refreshClass'=>'更新应用','adminconfig'=>'显示依赖应用信息');
     }
     function hook() {
         $hooks=array();
@@ -170,6 +170,22 @@ class shop {
             @unlink($classfile);
             return E('安装包解压失败,请检查应用目录权限');
         }
+    }
+    function downloadProgress(){
+        if (!defined('CURLOPT_PROGRESSFUNCTION')) {
+            return false;
+        }
+        if(!$content=@file_get_contents(cacheDir('shop').'progress.txt')){
+            return false;
+        }
+        $contents=explode(':',$content);
+        if(isset($contents[1]) && is_numeric($contents[0]) && is_numeric($contents[1]) && $contents[1]>100 && $contents[0]<$contents[1]){
+            return array('msg'=>'下载中,'.round(($contents[0] /$contents[1]) * 100).'%');
+        }
+        if(is_numeric($contents[0]) && $contents[0]>100){
+            return array('msg'=>'已下载,'.C('cms:common:filesizeString',$contents[0],2));
+        }
+        return false;
     }
     function installClass() {
         if(!is_hash(@$_POST['classhash'])) {
@@ -415,11 +431,25 @@ class shop {
                         continue;
                     }
                 }
-                if(C('cms:common:download',$url,$filepath,300,array('CURLOPT_CONNECTTIMEOUT'=>10,'CURLOPT_SSL_VERIFYPEER'=>FALSE,'CURLOPT_SSL_VERIFYHOST'=>FALSE,'CURLOPT_HTTP_VERSION'=>CURL_HTTP_VERSION_1_0,'CURLOPT_POST'=>1,'CURLOPT_POSTFIELDS'=>C('this:shopInfo')))){
+                $downloadArgs=array('CURLOPT_CONNECTTIMEOUT'=>10,'CURLOPT_SSL_VERIFYPEER'=>FALSE,'CURLOPT_SSL_VERIFYHOST'=>FALSE,'CURLOPT_HTTP_VERSION'=>CURL_HTTP_VERSION_1_0,'CURLOPT_POST'=>1,'CURLOPT_POSTFIELDS'=>C('this:shopInfo'));
+                if (defined('CURLOPT_PROGRESSFUNCTION')) {
+                    $downloadArgs['CURLOPT_NOPROGRESS']=false;
+                    $downloadArgs['CURLOPT_PROGRESSFUNCTION']='shop_download_progress';
+                }
+                set_time_limit(60*10);
+                if(C('cms:common:download',$url,$filepath,300,$downloadArgs)){
+                    @unlink(cacheDir('shop').'progress.txt');
                     return true;
                 }
             }
         }
         Return false;
+    }
+}
+function shop_download_progress($res, $download_size, $downloaded, $upload_size=0, $uploaded=0){
+    if(is_numeric($res)){
+        @file_put_contents(cacheDir('shop').'progress.txt', $download_size.':'.$res);
+    }else{
+        @file_put_contents(cacheDir('shop').'progress.txt', $downloaded.':'.$download_size);
     }
 }
