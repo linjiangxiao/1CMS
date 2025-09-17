@@ -2252,11 +2252,13 @@ class cms_database {
             }
             preg_match("/(?:\()(.*)(?:\))/s",$link['sql'],$fieldssql);
             if(isset($fieldssql[1])) {
+                $fieldssql[1]=preg_replace('/\((\d+),(\d+)\)/', '($1*$2)', $fieldssql[1]);
                 $fieldsarray=explode(',',$fieldssql[1]);
                 foreach($fieldsarray as $key=>$val) {
                     $val=trim(str_replace("  "," ",$val));
                     $vals=explode(' ',$val);
                     if(isset($vals[1])) {
+                        $vals[1]=str_replace("*",",",$vals[1]);
                         $vals[0]=trim(str_replace(array('"','[',']'),'',$vals[0]));
                         $fields[$vals[0]]=array('Field'=>$vals[0],'Type'=>$vals[1]);
                     }
