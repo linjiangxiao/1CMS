@@ -6,6 +6,7 @@ class admin_article {
         if(!$array['channel']=C('this:article:channelGet',@$_GET['cid'])) {
             Return E('栏目不存在或无法访问');
         }
+        $GLOBALS['admin']['cid']=$array['channel']['id'];
         if(!isset($array['disabledColumns'])){ $array['disabledColumns']=array(); }
         $array['columns']=C('cms:form:all','column',$array['channel']['_module']['hash'],$array['channel']['_module']['classhash']);
         $array['columns']=C('cms:form:getColumnCreated',$array['columns'],$array['channel']['_module']['table']);
@@ -41,6 +42,7 @@ class admin_article {
         if(!$array['channel']=C('this:article:channelGet',@$_GET['cid'])) {
             Return E('栏目不存在或无法访问');
         }
+        $GLOBALS['admin']['cid']=$array['channel']['id'];
         if(!isset($array['auth']['list'])){ $array['auth']['list']=C('this:moduleAuth',$array['channel']['_module'],'list'); }
         if(!$array['auth']['list']){
             Return E('无权限');
@@ -192,6 +194,7 @@ class admin_article {
         if(!$array['channel']=C('this:article:channelGet',@$_GET['cid'])) {
             Return E('栏目不存在或无法访问');
         }
+        $GLOBALS['admin']['cid']=$array['channel']['id'];
         if(isset($array['id'])){ $_GET['id']=$array['id']; }
         if(C('cms:common:verify',@$_GET['id'],'id')) {
             $GLOBALS['admin']['articleAction']='edit';
@@ -310,6 +313,7 @@ class admin_article {
         if(!$array['channel']=C('this:article:channelGet',@$_POST['cid'])) {
             Return E('栏目不存在或无法访问');
         }
+        $GLOBALS['admin']['cid']=$array['channel']['id'];
         if(isset($array['id'])){ $_POST['id']=$array['id']; }
         if(C('cms:common:verify',@$_POST['id'],'id')) {
             $article_id=$_POST['id'];
@@ -427,6 +431,7 @@ class admin_article {
         if(!$array['channel']=C('this:article:channelGet',@$_POST['cid'])) {
             Return E('栏目不存在或无法访问');
         }
+        $GLOBALS['admin']['cid']=$array['channel']['id'];
         if(!isset($array['auth']['del'])){ $array['auth']['del']=C('this:moduleAuth',$array['channel']['_module'],'del'); }
         if(!$array['auth']['del']) {
             Return E('无权限');
@@ -461,6 +466,7 @@ class admin_article {
         if(!$array['channel']=C('this:article:channelGet',@$_GET['cid'])) {
             Return E('栏目不存在或无法访问');
         }
+        $GLOBALS['admin']['cid']=$array['channel']['id'];
         if(!isset($array['auth']['var'])){ $array['auth']['var']=C('this:moduleAuth',$array['channel']['_module'],'var'); }
         if(!$array['auth']['var']) {
             Return E('无权限');
@@ -551,6 +557,7 @@ class admin_article {
         if(!$array['channel']=C('this:article:channelGet',@$_POST['cid'])) {
             Return E('栏目不存在或无法访问');
         }
+        $GLOBALS['admin']['cid']=$array['channel']['id'];
         if(!isset($array['auth']['var'])){ $array['auth']['var']=C('this:moduleAuth',$array['channel']['_module'],'var'); }
         if(!$array['auth']['var']) {
             Return E('保存失败,无权限');
