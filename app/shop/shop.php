@@ -2,7 +2,7 @@
 if(!defined('1cms')) {exit();}
 class shop {
     function auth() {
-        Return array('index'=>'浏览商店','downloadClass;installClass'=>'下载应用','upgradeClass;refreshClass'=>'更新应用','adminconfig'=>'显示依赖应用信息');
+        Return array('index'=>'浏览商店','downloadClass;installClass;developer'=>'下载应用','upgradeClass;refreshClass'=>'更新应用','adminconfig'=>'显示依赖应用信息');
     }
     function hook() {
         $hooks=array();
@@ -11,7 +11,24 @@ class shop {
         Return $hooks;
     }
     function show() {
-        echo('<script>layui.use([\'index\'],function(){layui.$(\'#cms-right-top-button\').append(\'<a href="?do=shop:index" class="layui-btn layui-btn-sm layui-btn-danger"><i class="layui-icon layui-icon-cart-simple"></i><b>应用商店</b></a>\');});</script>');
+        echo('<script>layui.use([\'index\'],function(){');
+        echo('layui.$(\'#cms-right-top-button\').append(\'<a href="?do=shop:index" class="layui-btn layui-btn-sm layui-btn-danger"><i class="layui-icon layui-icon-cart-simple"></i><b>应用商店</b></a>\');');
+        $developer=C('cms:class:get','developer');
+        if(!$developer || !$developer['enabled']){
+            echo('layui.$(\'#cms-right-top-button\').append(\'<a class="layui-btn layui-btn-sm layui-btn-danger installdeveloper"><i class="layui-icon layui-icon-add-1"></i><b>创建应用</b></a>\');');
+            echo('layui.$(\'#cms-right-top-button\').on(\'click\',\'.installdeveloper\',function(){layui.admin.popup(\'?do=shop:developer\',\'创建应用需安装开发者工具箱\');});');
+        }
+        echo('});</script>');
+    }
+    function developer(){
+        $developer=C('cms:class:get','developer');
+        if(!$developer){
+            return C('cms:common:jump','?do=shop:index&action=detail&hash=developer');
+        }
+        if(!$developer['enabled']){
+            return E('开发者工具箱 已下载,未启用');
+        }
+        return C('cms:common:jump','?do=developer:admin:add&bread=0');
     }
     function configShow() {
         if($class=C('cms:class:get',@$_GET['hash'])) {
