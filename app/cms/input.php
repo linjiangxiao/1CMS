@@ -236,7 +236,7 @@ class cms_input {
     }
     function sql($config) {
         if(!$config=C('this:input:configReset',$config,1,0)) {
-            Return false;
+            Return 'longtext';
         }
         if(!$sql=C($config['function'],'sql',$config)) {
             $sql='varchar(255)';
