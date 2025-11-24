@@ -51,7 +51,7 @@
                     <div class="layui-input-block">
                       <input type="text" name="hash" value="{if isset($route.hash)}{$route.hash}{/if}"  class="layui-input" {if isset($route.hash)}readonly{/if}>
                     </div>
-                    <div class="layui-form-mid">{if isset($route.hash)}标识无法更改{else}标识格式为字母或(字母,数字,_)组合.默认栏目页标识为channel,列表页为list,文章页为article{/if}</div>
+                    <div class="layui-form-mid">{if isset($route.hash)}标识无法更改{else}标识格式为字母或(字母,数字,_)组合.默认栏目页标识为<span class="route_hash_quick_input cmscolor" style="cursor:pointer">channel</span>,列表页为<span class="route_hash_quick_input cmscolor" style="cursor:pointer">list</span>,文章页为<span class="route_hash_quick_input cmscolor" style="cursor:pointer">article</span>{/if}</div>
                     </div>
                   </div>
 
@@ -118,6 +118,9 @@
         if(arg){layui.$('input[name=uri]').val(layui.$('input[name=uri]').val()+'('+arg+')');}
         layer.close(index);
       });
+    });
+    layui.$('.route_hash_quick_input').click(function(){
+      layui.$('input[name=hash]').val(layui.$(this).text());
     });
     layui.form.on('submit(form-submit)', function(data){
         layui.$('button[lay-filter=form-submit]').blur();
