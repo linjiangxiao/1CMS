@@ -85,6 +85,9 @@ class cms_install {
         if(!isset($_SERVER['SERVER_SOFTWARE'])) {$_SERVER['SERVER_SOFTWARE']='未知';}
         $array['infos'][]=array('name'=>'Web服务器','value'=>htmlspecialchars($_SERVER['SERVER_SOFTWARE']));
         $array['infos'][]=array('name'=>'PHP版本','value'=>PHP_VERSION);
+        if(@date_default_timezone_get()){
+            $array['infos'][]=array('name'=>'时区/时间','value'=>@date_default_timezone_get().' / '.date('Y-m-d H:i:s'));
+        }
         $array['infos'][]=array('name'=>'CMS版本','value'=>$cmsversion);
         if(!function_exists('get_loaded_extensions')) {
             $array['infos'][]=array('name'=>'get_loaded_extensions','value'=>'函数被禁用,无法检测安装环境','error'=>1);
