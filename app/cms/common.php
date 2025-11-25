@@ -1,13 +1,30 @@
 <?php
 if(!defined('1cms')) {exit();}
 class cms_common {
-    function addLog($msg,$time='') {
-        if(empty($time)) {
-            $time=date('Y-m-d H:i:s');
+    function addLog($msg,$format='{time}') {
+        $format=str_replace("{time}",date('Y-m-d H:i:s'),$format);
+        $format=str_replace("{microtime}",microtime(true),$format);
+        if(strpos($format,'{ip}')!==false) {
+            $format=str_replace("{ip}",C('cms:common:ip'),$format);
         }
-        $file = fopen('log_'.md5($GLOBALS['C']['SiteHash']).'.txt', "a");
-        fwrite($file, $time.' '.$msg."\n");
-        fclose($file);
+        if(strpos($format,'{uri}')!==false) {
+            $format=str_replace("{uri}",C('cms:nowUri'),$format);
+        }
+        if(strpos($format,'{url}')!==false) {
+            $format=str_replace("{url}",C('cms:common:url'),$format);
+        }
+        if(strpos($format,'{post}')!==false) {
+            if(isset($_POST) && is_array($_POST)){
+                $format=str_replace("{post}",@json_encode($_POST),$format);
+            }else{
+                $format=str_replace("{post}",'[]',$format);
+            }
+        }
+        $format=str_replace("{ua}",@$_SERVER['HTTP_USER_AGENT'],$format);
+        $format=str_replace("{referer}",@$_SERVER['HTTP_REFERER'],$format);
+        $file = @fopen($GLOBALS['C']['SystemRoot'].'log_'.md5($GLOBALS['C']['SiteHash']).'.txt', "a");
+        @fwrite($file, $format.' '.$msg."\n");
+        @fclose($file);
         Return true;
     }
     function jump($url='',$time=0) {
