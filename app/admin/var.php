@@ -190,7 +190,7 @@ class admin_var {
                 if(empty($thismsg)) {
                     $msg.=htmlspecialchars($vars['formname'][$key]).'['.htmlspecialchars($vars['hash'][$key]).']: 增加成功<br>';
                 }else {
-                    $msg.=htmlspecialchars($vars['formname'][$key]).'['.htmlspecialchars($vars['hash'][$key]).']:'.$thismsg.'<br>';
+                    $msg.=htmlspecialchars($vars['formname'][$key]).'['.htmlspecialchars($vars['hash'][$key]).']:<span style="color:red">'.$thismsg.'</span><br>';
                 }
             }
         }

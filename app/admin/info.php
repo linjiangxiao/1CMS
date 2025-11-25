@@ -188,7 +188,7 @@ class admin_info {
                     $msg.=htmlspecialchars($infos['formname'][$key]).'['.htmlspecialchars($infos['hash'][$key]).']: 增加成功<br>';
                     $success_info[]=$infos['formname'][$key];
                 }else {
-                    $msg.=htmlspecialchars($infos['formname'][$key]).'['.htmlspecialchars($infos['hash'][$key]).']:'.$thismsg.'<br>';
+                    $msg.=htmlspecialchars($infos['formname'][$key]).'['.htmlspecialchars($infos['hash'][$key]).']:<span style="color:red">'.$thismsg.'</span><br>';
                 }
             }
         }

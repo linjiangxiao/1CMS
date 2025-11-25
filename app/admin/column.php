@@ -222,7 +222,7 @@ class admin_column {
                     $msg.=htmlspecialchars($columns['formname'][$key]).'['.htmlspecialchars($columns['hash'][$key]).']: 增加成功<br>';
                     $success_column[]=$columns['formname'][$key];
                 }else {
-                    $msg.=htmlspecialchars($columns['formname'][$key]).'['.htmlspecialchars($columns['hash'][$key]).']:'.$thismsg.'<br>';
+                    $msg.=htmlspecialchars($columns['formname'][$key]).'['.htmlspecialchars($columns['hash'][$key]).']:<span style="color:red">'.$thismsg.'</span><br>';
                 }
             }
         }
