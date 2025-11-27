@@ -1765,7 +1765,7 @@ class cms_database {
         unset($strarray['where']);
         $str='';
         foreach($strarray as $key=>$val) {
-            if(substr($val,0,2)=='{{' && substr($val,-2)=='}}') {
+            if($val!==null && substr($val,0,2)=='{{' && substr($val,-2)=='}}') {
                 $val=ltrim($val,'{{');
                 $val=rtrim($val,'}}');
                 $str.=','.$this->escape($key)."=".$this->escape($val);
