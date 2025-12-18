@@ -431,7 +431,11 @@ class shop {
                         continue;
                     }
                 }
-                $downloadArgs=array('CURLOPT_CONNECTTIMEOUT'=>10,'CURLOPT_SSL_VERIFYPEER'=>FALSE,'CURLOPT_SSL_VERIFYHOST'=>FALSE,'CURLOPT_HTTP_VERSION'=>CURL_HTTP_VERSION_1_0,'CURLOPT_POST'=>1,'CURLOPT_POSTFIELDS'=>C('this:shopInfo'));
+                $downloadArgs=array('CURLOPT_CONNECTTIMEOUT'=>10,'CURLOPT_SSL_VERIFYPEER'=>FALSE,'CURLOPT_SSL_VERIFYHOST'=>FALSE,'CURLOPT_HTTP_VERSION'=>CURL_HTTP_VERSION_1_0);
+                if(stripos($url,'.zip')===false) {
+                    $downloadArgs['CURLOPT_POST']=1;
+                    $downloadArgs['CURLOPT_POSTFIELDS']=C('this:shopInfo');
+                }
                 if (defined('CURLOPT_PROGRESSFUNCTION')) {
                     $downloadArgs['CURLOPT_NOPROGRESS']=false;
                     $downloadArgs['CURLOPT_PROGRESSFUNCTION']='shop_download_progress';
