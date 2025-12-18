@@ -25,7 +25,7 @@
 
 ### 部署方便
 
-兼容PHP5.2--PHP8.4,在APACHE、NGINX、IIS上都能使用,支持MySQL、SQLite数据库.
+兼容PHP5.2--PHP8.5,适配Apache/Nginx/IIS,支持Docker部署,支持MySQL/SQLite数据库.
 
 ### 开箱即用
 
