@@ -4,6 +4,10 @@ class cms_install {
     function startup() {
         $GLOBALS['C']['install']=false;
         if(isset($GLOBALS['C']['DbInfo']) && is_array($GLOBALS['C']['DbInfo'])) {Return ;}
+        if(isset($_GET['phpinfo'])){
+            phpinfo();
+            return true;
+        }
         if(isset($_POST['rewrite'])) {
             $config=array();
             if(isset($_POST['rewrite']) && $_POST['rewrite']=='1') {
@@ -84,7 +88,7 @@ class cms_install {
         $array['version']=$cmsversion;
         if(!isset($_SERVER['SERVER_SOFTWARE'])) {$_SERVER['SERVER_SOFTWARE']='未知';}
         $array['infos'][]=array('name'=>'Web服务器','value'=>htmlspecialchars($_SERVER['SERVER_SOFTWARE']));
-        $array['infos'][]=array('name'=>'PHP版本','value'=>PHP_VERSION);
+        $array['infos'][]=array('name'=>'PHP版本','value'=>PHP_VERSION.' [<a href="?phpinfo" target="_blank" style="color:#1E9FFF">phpinfo</a>]');
         if(@date_default_timezone_get()){
             $array['infos'][]=array('name'=>'时区/时间','value'=>@date_default_timezone_get().' / '.date('Y-m-d H:i:s'));
         }
