@@ -1448,8 +1448,8 @@ function where(){
 function escape($str){
     Return C($GLOBALS['C']['DbClass'].':escape',$str);
 }
-function total($table='',$where=''){
-    Return C($GLOBALS['C']['DbClass'].':total',$table,$where);
+function total($table='',$where='',$optimize=0){
+    Return C($GLOBALS['C']['DbClass'].':total',$table,$where,$optimize);
 }
 function one(){
     $args=func_get_args();
@@ -1811,21 +1811,54 @@ class cms_database {
             Return false;
         }
     }
-    function total($table='',$where=''){
+    function total($table='',$where='',$optimize=0){
         if(empty($table)) {
             Return false;
         }
+        $table=$this->prefix($this->escape($table));
         if(!empty($where)) {
             if(is_array($where)) {
                 $where='where '.$this->where(array($where));
-            }else {
+            }elseif(substr($where,0,6)!='where ') {
                 $where='where '.$where;
             }
         }
-        $this->query('SELECT count(*) FROM '.$this->prefix($this->escape($table)).' '.$where.' limit 1');
+        if(isset($GLOBALS['C']['DbInfo']['minCountCacheTime'])){
+            $minCountCacheTime=$GLOBALS['C']['DbInfo']['minCountCacheTime'];
+        }else{
+            $minCountCacheTime=3600;
+        }
+        if(isset($GLOBALS['C']['DbInfo']['minCount'])){
+            $minCount=$GLOBALS['C']['DbInfo']['minCount'];
+        }else{
+            $minCount=1000000;
+        }
+        if($optimize && $minCountCacheTime>0){
+            if(is_array($where)){
+                $hash=$table.'_'.substr(md5(json_encode($where).md5($GLOBALS['C']['SiteHash'])),0,16);
+            }else{
+                $hash=$table.'_'.substr(md5($where).md5($GLOBALS['C']['SiteHash']),0,16);
+            }
+            $cachefile=cacheDir('dbcount',1).$hash.'.txt';
+            if($cachecontent=@file_get_contents($cachefile)){
+                $content=explode(';',$cachecontent);
+                if(isset($content[1]) && $content[1]+$minCountCacheTime>time()){
+                    return $content[0];
+                }
+            }
+        }
+        $this->query('SELECT count(*) FROM '.$table.' '.$where.' limit 1');
         if($total=$this->fetchone()) {
             if(isset($total['count(*)'])) {
-                Return intval($total['count(*)']);
+                $totalcount=intval($total['count(*)']);
+                if($optimize && $minCountCacheTime>0 && $totalcount>=$minCount){
+                    $fp = @fopen($cachefile,"w");
+                    if($fp) {
+                        @fwrite($fp,$totalcount.';'.time());
+                    }
+                    @fclose($fp);
+                }
+                Return $totalcount;
             }
         }
         Return false;
@@ -1918,9 +1951,23 @@ class cms_database {
             $limitsql='limit '.$limit;
         }
         if($page) {
-            $this->query("SELECT count(*) FROM $table $where");
-            $articlecount=$this->fetchone();
-            $GLOBALS['C']['page']['article']=$articlecount['count(*)'];
+            $GLOBALS['C']['page']['article']=total('no_perfix_'.$table,$where,$optimize);
+            $strarray['total']=$GLOBALS['C']['page']['article'];
+        }
+        if($optimize && !empty($limit) && !empty($offset) && isset($strarray['total']) && is_numeric($strarray['total']) && $strarray['total']>100000 && $offset>($strarray['total']/2) && stripos($order,',')===false && stripos($order,'(')===false && substr($order,-2)=='sc'){
+            $newoffset=$strarray['total']+1-($offset+$limit);
+            if($newoffset<0){
+                $newoffset=0;
+            }
+            if(stripos($order,' desc')){
+                $reverse=true;
+                $order=str_ireplace(" desc"," asc",$order);
+                $limitsql='limit '.$newoffset.','.$limit;
+            }elseif(stripos($order,'asc')){
+                $reverse=true;
+                $order=str_ireplace(" asc"," desc",$order);
+                $limitsql='limit '.$newoffset.','.$limit;
+            }
         }
         $this->query("SELECT $column FROM $table $where $group $order $limitsql");
         if(!$optimize) {
@@ -1935,6 +1982,9 @@ class cms_database {
         if(isset($strarray['column'])) {$column=$this->escape($strarray['column']);}else {$column='*';}
         $where='where '.$this->where(array(array('id'=>$ids)));
         $this->query("SELECT $column FROM $table $where $order");
+        if(isset($reverse) && $reverse){
+            return array_reverse($this->fetchall());
+        }
         return $this->fetchall();
     }
     function page($args){

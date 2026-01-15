@@ -151,7 +151,7 @@ class cms_article {
                 $config['pagename']='_page';
             }
             if(!isset($config['articlecount'])) {
-                $config['articlecount'] = total($config['table'],$config['sql']);
+                $config['articlecount'] = total($config['table'],$config['sql'],1);
             }
             $config['start']=($config['page']-1)*$config['pagesize'];
             if($config['articlecount']%$config['pagesize']==0) {
@@ -214,6 +214,9 @@ class cms_article {
         $article_query['offset']=$config['start'];
         $article_query['limit']=$config['pagesize'];
         $article_query['order']=$config['order'];
+        if(isset($config['articlecount'])){
+            $article_query['total']=$config['articlecount'];
+        }
         $article_query['optimize']=true;
         $articles=all($article_query);
         foreach($articles as $key=>$article) {
