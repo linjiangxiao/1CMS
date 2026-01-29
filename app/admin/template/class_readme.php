@@ -3,6 +3,7 @@
 <html>
 <head>{this:head($title)}</head>
 <style>
+.doc_detail {text-autospace: normal;}
 .doc_detail h1{font-size:24px;padding:10px 0;color:#1E9FFF}
 .doc_detail h2{color:#1E9FFF;font-size: 1.6em;font-weight: 600;line-height: 1.225;padding-bottom: .3em;margin-top: 3em;margin-bottom: 16px;border-bottom: 1px solid #eee;}
 .doc_detail h3{color:#1E9FFF;font-size: 1.2em;font-weight: 600;line-height: 1.2;margin-top: 2em;margin-bottom: 16px;}
@@ -20,7 +21,7 @@
 .doc_detail p code{border: 1px solid #ddd; background: #f6f6f6; padding: 3px 5px; border-radius: 3px; font-size: 14px;margin-left: 5px;margin-right: 4px;font-family "Helvetica Neue", Helvetica, "PingFang SC", Tahoma, Arial, sans-serif "Helvetica Neue", Helvetica, "PingFang SC", Tahoma, Arial, sans-serif}
 .doc_detail ol li{list-style:decimal;margin-left:2em;margin-bottom:10px}
 .doc_detail ul li{list-style:disc;margin-bottom:10px}
-pre{background:#fafafa;padding:5px}
+pre{background:#fafafa;padding:5px;text-autospace: no-autospace;}
 </style>
 <body>
   
