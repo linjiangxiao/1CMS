@@ -28,6 +28,14 @@
 </div>
 <script>
 layui.use(['form'],function(){
+    if (typeof window.URL === 'function' && typeof window.history == 'object' && typeof history.replaceState == 'function') {
+        var url = new URL(window.location.href);
+        url.searchParams.delete('u');
+        url.searchParams.delete('p');
+        if (url.href !== window.location.href) {
+            history.replaceState(null, '', url.toString());
+        }
+    }
     function loginpost(){
         var data = layui.form.val("1cms-login-form");
         layui.admin.req({type:'post',url:"?do=admin:login",data:data,async:true,beforeSend:function(){
