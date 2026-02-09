@@ -124,21 +124,12 @@ class cms {
                         if(count($article_where)) {
                             $GLOBALS['C']['route_view_article'][$thisroute['classfunction']]=$article;
                         }
-                        $inited=true;
                     }
                     $thisroute=C('this:nowRoute',$thisroute);
                     if(count($article_where)){
-                        if($inited) {
-                            C($thisroute['classfunction'],$channel,$article);
-                        }else {
-                            $inited=C($thisroute['classfunction'],$channel,$article);
-                        }
+                        $inited=C($thisroute['classfunction'],$channel,$article);
                     }else{
-                        if($inited) {
-                            C($thisroute['classfunction'],$channel);
-                        }else {
-                            $inited=C($thisroute['classfunction'],$channel);
-                        }
+                        $inited=C($thisroute['classfunction'],$channel);
                     }
                     if(isset($GLOBALS['C']['GET'])) {
                         foreach($GLOBALS['C']['GET'] as $key=>$val) {
@@ -155,7 +146,6 @@ class cms {
             $GLOBALS['C']['routekey']=$routekey;
             if(isset($thisroute['classview']) && !empty($thisroute['classview'])) {
                 $GLOBALS['C']['route_view'][$thisroute['classfunction']]=$thisroute['classview'];
-                $inited=true;
             }
             if(isset($GLOBALS['C']['GET'])) {
                 foreach($GLOBALS['C']['GET'] as $key=>$val) {
@@ -163,11 +153,7 @@ class cms {
                 }
             }
             $thisroute=C('this:nowRoute',$thisroute);
-            if($inited) {
-                C($thisroute['classfunction']);
-            }else {
-                $inited=C($thisroute['classfunction']);
-            }
+            $inited=C($thisroute['classfunction']);
             if(isset($GLOBALS['C']['GET'])) {
                 foreach($GLOBALS['C']['GET'] as $key=>$val) {
                     unset($_GET[$key]);
@@ -204,18 +190,18 @@ class cms {
             $C_template_config['file']=$_file;
             $C_template_config['rootpath']=$GLOBALS['C']['SystemRoot'].$GLOBALS['C']['ClassDir'].DIRECTORY_SEPARATOR.$C_template_config['class'].DIRECTORY_SEPARATOR.$C_template_config['dir'];
             $U_tempfile=include_template($C_template_config);
-            if($U_tempfile) {include($U_tempfile);}
+            if($U_tempfile) {$view_return=include($U_tempfile);}
         }else {
             $C_template_config['rootpath']=$GLOBALS['C']['SystemRoot'].$GLOBALS['C']['ClassDir'].DIRECTORY_SEPARATOR.$C_template_config['class'].DIRECTORY_SEPARATOR.$C_template_config['dir'];
             $C_template_config['code']=$_file;
             $U_tempfile=include_template($C_template_config);
-            if($U_tempfile) {include($U_tempfile);}
+            if($U_tempfile) {$view_return=include($U_tempfile);}
         }
         if(isset($GLOBALS['class_config'][$_classhash]['template_class']) && $GLOBALS['class_config'][$_classhash]['template_class']!=$_classhash) {
             array_pop($GLOBALS['C']['running_class']);
         }
         array_pop($GLOBALS['C']['running_class']);
-        Return true;
+        Return $view_return;
     }
     function nowTemplate($config){
         return $config;
@@ -492,11 +478,14 @@ function C() {
                     }
                     if(isset($route_view)) {
                         if(isset($route_view_article) && is_array($return)) {
-                            V($route_view,array_merge($route_view_article,$return),$classhash);
+                            $route_view_return=V($route_view,array_merge($route_view_article,$return),$classhash);
                         }elseif(isset($route_view_article)) {
-                            V($route_view,array_merge($route_view_article),$classhash);
+                            $route_view_return=V($route_view,array_merge($route_view_article),$classhash);
                         }else {
-                            V($route_view,$return,$classhash);
+                            $route_view_return=V($route_view,$return,$classhash);
+                        }
+                        if($route_view_return===false){
+                            $return=false;
                         }
                     }
                     Return $return;
@@ -510,6 +499,9 @@ function C() {
     }
     unset($args[0]);
     $return=false;
+    if(empty($classfunction)){
+        $return=true;
+    }
     $GLOBALS['C']['running_class'][]=$classhash;
     if(!isset($GLOBALS['class_config'][$classhash]) && $end_class!=='~') {
         if(!class_exists($classhash)) {
@@ -588,11 +580,14 @@ function C() {
     }
     if(isset($route_view)) {
         if(isset($route_view_article) && is_array($return)) {
-            V($route_view,array_merge($route_view_article,$return),$classhash);
+            $route_view_return=V($route_view,array_merge($route_view_article,$return),$classhash);
         }elseif(isset($route_view_article)) {
-            V($route_view,array_merge($route_view_article),$classhash);
+            $route_view_return=V($route_view,array_merge($route_view_article),$classhash);
         }else {
-            V($route_view,$return,$classhash);
+            $route_view_return=V($route_view,$return,$classhash);
+        }
+        if($route_view_return===false){
+            $return=false;
         }
     }
     array_pop($GLOBALS['C']['running_class']);
