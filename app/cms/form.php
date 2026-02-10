@@ -18,6 +18,9 @@ class cms_form {
             $form_list_query['where']['classhash']=$classhash;
         }
         $form_list_query['order']='formorder desc,id asc';
+        if($kind=='column'){
+            $form_list_query['order']='taborder asc,formorder desc,id asc';
+        }
         $form_list=all($form_list_query);
         $GLOBALS['C']['formlist'][$kind.'|'.$modulehash.'|'.$classhash]=$form_list;
         foreach($form_list as $this_form) {
