@@ -88,9 +88,20 @@
             $('#{$name}_article span.choose').hide();
         });
         $('#{$name}_article thead').on('click','span.search',function(){
-            var {$name}_layerprompt=layer.prompt({title: '输入搜索词',value:$('#{$name}_choose_keyword').val(),yes:function(){
+            if($('#{$name}_choose_keyword').val()){
+              $('#{$name}_article span.search').html('<a>搜索</a>');
+              $('#{$name}_choose_keyword').val('');
+              $('#{$name}_choose_page').val(1);
+              {$name}_article_load();
+              return;
+            }
+            if (typeof window.olds_earch_word_{$name} == "undefined") {
+                window.olds_earch_word_{$name}='';
+            }
+            var {$name}_layerprompt=layer.prompt({title: '输入搜索词',value:window.olds_earch_word_{$name},yes:function(){
                 var keyword = $('.layui-layer-prompt .layui-layer-input').val();
                 if (keyword) {
+                    window.olds_earch_word_{$name}=keyword;
                     $('#{$name}_article span.search').html('<a>搜索:'+keyword+'</a>');
                 } else {
                     $('#{$name}_article span.search').html('<a>搜索</a>');
@@ -169,7 +180,11 @@
                 if (res.pagecount==0)
                 {
                   $('#{$name}_article span.page').html('0/0');
-                  $('#{$name}_article span.search').hide();
+                  if($('#{$name}_choose_keyword').val()){
+                    $('#{$name}_article span.search').show();
+                  }else{
+                    $('#{$name}_article span.search').hide();
+                  }
                 }else{
                   $('#{$name}_article span.page').html($('#{$name}_choose_page').val()+'/'+res.pagecount);
                   $('#{$name}_article span.search').show();
