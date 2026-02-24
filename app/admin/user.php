@@ -19,31 +19,27 @@ class admin_user {
         $user_query['table']='user';
         $user_query['optimize']=true;
         $user_query['page']=page('pagesize',30);
-        $user_query_where='';
+        $user_query['where']=array();
         if(isset($_GET['rolehash']) && P('user:roleIndex') && $role=C('cms:user:roleGet',$_GET['rolehash'])) {
-            $user_query_where.="(rolehash like '".$role['hash']."' or rolehash like '".$role['hash'].";%' or rolehash like '%;".$role['hash']."' or rolehash like '%;".$role['hash'].";%')";
+            $user_query['where']['1;']=array(array('rolehash'=>$role['hash']),array('rolehash%'=>$role['hash'].';%'),array('rolehash%'=>';'.$role['hash'].';'),array('rolehash%'=>'%;'.$role['hash']));
             $array['breadcrumb'][]=array('title'=>$role['rolename'].'['.$role['hash'].']');
         }
+        if($listWhere=C('this:user:listWhere:~',$user_query['where'])) {
+            $user_query['where']=$listWhere;
+        }
+        $user_query['where']=where($user_query['where']);
         if(!C('this:user:superAdmin',$array['nowuser']['rolehash'])) {
             $roles=C('cms:user:roleAll');
-            $myrolehashs=explode(';',$array['nowuser']['rolehash']);
-            foreach($myrolehashs as $key=>$thismyrolehash) {
-                if(empty($thismyrolehash)) {
-                    unset($myrolehashs[$key]);
-                }
-            }
-            $role_where='';
+            $myrolehashs=array_filter(explode(';',$array['nowuser']['rolehash']));
             foreach($roles as $key=>$thisrole) {
                 if(!in_array($thisrole['hash'],$myrolehashs)) {
-                    if(!empty($role_where)) {
-                        $role_where.=' and ';
+                    if(!empty($user_query['where'])) {
+                        $user_query['where'].=' and ';
                     }
-                    $role_where.="rolehash not like '".$thisrole['hash']."' and rolehash not like '".$thisrole['hash'].";%' and rolehash not like '%;".$thisrole['hash']."' and rolehash not like '%;".$thisrole['hash'].";%'";
+                    $user_query['where'].="rolehash not like '".$thisrole['hash']."' and rolehash not like '".$thisrole['hash'].";%' and rolehash not like '%;".$thisrole['hash']."' and rolehash not like '%;".$thisrole['hash'].";%'";
                 }
             }
-            $user_query_where.=$role_where;
         }
-        $user_query['where']=$user_query_where;
         $array['users']=all($user_query);
         $array['infos']=C('cms:form:all','info');
         $array['infos']=C('cms:form:getColumnCreated',$array['infos'],'user');

@@ -19,6 +19,7 @@
             </div>
 
           <div class="layui-card-body layui-form">
+            {this:user:listTop:~()}
             <table class="layui-table" lay-skin="line" id="users">
             <colgroup>
               <col>
