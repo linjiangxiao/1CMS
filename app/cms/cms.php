@@ -2303,8 +2303,14 @@ class cms_database {
                     $val=trim(str_replace("  "," ",$val));
                     $vals=explode(' ',$val);
                     if(isset($vals[1])) {
-                        $vals[1]=str_replace("*",",",$vals[1]);
                         $vals[0]=trim(str_replace(array('"','[',']'),'',$vals[0]));
+                        $vals[1]=str_replace("*",",",$vals[1]);
+                        if(strtolower($vals[1])=='integer'){
+                            $vals[1]='int(11)';
+                        }
+                        if(strtolower($vals[1])=='real' || strtolower($vals[1])=='numeric'){
+                            $vals[1]='double';
+                        }
                         $fields[$vals[0]]=array('Field'=>$vals[0],'Type'=>$vals[1]);
                     }
                 }
