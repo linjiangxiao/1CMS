@@ -85,14 +85,20 @@ class cms_input {
         }
         $input_add_query['enabled']=1;
         $input_add_query['classenabled']=1;
-        unset($GLOBALS['C']['inputlist']);
-        if(C('this:input:get',$input_add_query['hash'])){Return false;}
         $input_add_query['table']='input';
-        if($id=insert($input_add_query)){
+        unset($GLOBALS['C']['inputlist']);
+        $input=C('this:input:get',$input_add_query['hash']);
+        if($input){
+            if($input_add_query['classhash']!=$input['classhash']){
+                return false;
+            }
+            $input_add_query['where']=where('hash',$input_add_query['hash']);
             unset($GLOBALS['C']['inputlist']);
-            return $id;
+            return update($input_add_query);
+        }else{
+            unset($GLOBALS['C']['inputlist']);
+            return insert($input_add_query);
         }
-        Return false;
     }
     function del($hash=0) {
         if(!$input=C('this:input:get',$hash)) {
