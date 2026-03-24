@@ -2290,30 +2290,30 @@ class cms_database {
                 $fields[$val['Field']]=$val;
             }
         }elseif($this->kind=='sqlitepdo') {
-            $query = $this -> query("SELECT * FROM sqlite_master WHERE type='table' and name='".$table."';");
-            $link = $this -> fetchone($query);
-            if(!isset($link['sql'])) {
-                Return $fields;
-            }
-            preg_match("/(?:\()(.*)(?:\))/s",$link['sql'],$fieldssql);
-            if(isset($fieldssql[1])) {
-                $fieldssql[1]=preg_replace('/\((\d+),(\d+)\)/', '($1*$2)', $fieldssql[1]);
-                $fieldsarray=explode(',',$fieldssql[1]);
-                foreach($fieldsarray as $key=>$val) {
-                    $val=trim(str_replace("  "," ",$val));
-                    $vals=explode(' ',$val);
-                    if(isset($vals[1])) {
-                        $vals[0]=trim(str_replace(array('"','[',']'),'',$vals[0]));
-                        $vals[1]=str_replace("*",",",$vals[1]);
-                        if(strtolower($vals[1])=='integer'){
-                            $vals[1]='int(11)';
+            $query = $this->query('PRAGMA table_info('.$table.')');
+            $rows = $this->fetchall($query);
+            foreach ($rows as $row) {
+                $type=strtolower($row['type']);
+                if($type=='integer' || substr($type,0,8)=='integer('){
+                    $type=str_replace('integer','int',$type);
+                    if($type=='int'){ $type='int(11)'; }
+                }elseif($type=='real' || substr($type,0,5)=='real('){
+                    $type='double';
+                }elseif($type=='numeric' || substr($type,0,8)=='numeric('){
+                    $type=str_replace('numeric','decimal',$type);
+                    if($type=='decimal'){ $type='decimal(10,2)'; }
+                }elseif($type=='text'|| substr($type,0,5)=='text('){
+                    preg_match('/text\((\d+)\)/',$type, $matches);
+                    $type='text';
+                    if(isset($matches[1]) && is_numeric($matches[1])){
+                        if($matches[1]<500){
+                            $type='varchar('.$matches[1].')';
+                        }elseif($matches[1]>=999){
+                            $type='longtext';
                         }
-                        if(strtolower($vals[1])=='real' || strtolower($vals[1])=='numeric'){
-                            $vals[1]='double';
-                        }
-                        $fields[$vals[0]]=array('Field'=>$vals[0],'Type'=>$vals[1]);
                     }
                 }
+                $fields[$row['name']]=array('Field'=>$row['name'],'Type'=>$type);
             }
         }
         $GLOBALS['C']['DbInfo']['showerror']=$showerror;
