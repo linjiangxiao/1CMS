@@ -74,7 +74,7 @@ class cms_article {
             }
         }
         if(!isset($config['table'])) {Return array();}
-        if(!isset($GLOBALS['C']['ArticleTable'][$config['table']])){
+        if(!isset($GLOBALS['C']['ArticleTableFields'][$config['table']])){
             $GLOBALS['C']['ArticleTableFields'][$config['table']]=C($GLOBALS['C']['DbClass'].':getfields',$config['table']);
         }
         if(!count($GLOBALS['C']['ArticleTableFields'][$config['table']])) {Return array();}
