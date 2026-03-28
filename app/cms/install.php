@@ -641,7 +641,7 @@ class cms_install {
             return false;
         }
         if(isset($args['admindir'])){ $config['AdminDir']=$args['admindir']; }else{ $config['AdminDir']='admin'; }
-        if(isset($args['rewrite']) && $args['rewrite']=='0'){ $config['rewrite']=0; }else{ $config['rewrite']=1; }
+        if(isset($args['rewrite']) && $args['rewrite']=='0'){ $config['UrlRewrite']=0; }else{ $config['UrlRewrite']=1; }
         if(isset($args['userhash'])){ $_POST['userhash']=$args['userhash']; }else{ $_POST['userhash']='admin'; }
         if(isset($args['passwd'])){ $_POST['passwd']=$args['passwd']; }else{ $_POST['passwd']='admin'; }
         C('this:class:install','cms');
