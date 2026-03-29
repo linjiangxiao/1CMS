@@ -240,7 +240,7 @@ class admin_var {
         $array['title']=$array['formname'].'['.$array['hash'].'] 修改';
         Return V('var_edit',$array);
     }
-    function editpost() {
+    function editPost() {
         if($var=C('cms:form:get',@$_POST['id'])){
             if($var['kind']!='var') {
                 Return E('变量不存在');
