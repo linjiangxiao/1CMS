@@ -1383,12 +1383,24 @@ function cli_parse(){
             $_SERVER['HTTP_HOST']=$urls['host'];
         }
         if(isset($urls['path'])){
-            $_SERVER['REQUEST_URI']=$urls['path'];
+            $_SERVER['argv'][1]=$urls['path'];
+            if(isset($urls['query'])){
+                $_SERVER['argv'][1].='?'.$urls['query'];
+            }
         }else{
-            $_SERVER['REQUEST_URI']='/';
+            $_SERVER['argv'][1]='';
         }
-    }else{
-        $_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
+    }
+    $_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
+    $urls=parse_url($_SERVER['argv'][1]);
+    if(isset($urls['query']) && isset($urls['path'])){
+        $_SERVER['REQUEST_URI']=$urls['path'];
+        parse_str($urls['query'],$gets);
+        if($gets){
+            foreach ($gets as $key => $get) {
+                $_GET[$key]=$get;
+            }
+        }
     }
     return true;
 }
