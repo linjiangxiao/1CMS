@@ -369,6 +369,32 @@ function CMS_init() {
         }
         if(!isset($GLOBALS['C']['route_matched'])) {C('cms:notFound');}
     }
+    if(isset($GLOBALS['C']['MatchFunction'])){
+        $result=call_user_func_array('C',array_merge(array($GLOBALS['C']['MatchFunction']['function']),$GLOBALS['C']['MatchFunction']['args']));
+        if(is_bool($result)){
+            if($result){
+                echo ("SUCCESS");
+            }else{
+                if(!isset($GLOBALS['C']['MatchFunction']['error'])){$GLOBALS['C']['MatchFunction']['error']=1;}
+                if(E()){
+                    echo ("ERROR:".E());
+                }else{
+                    echo ("ERROR");
+                }
+            }
+        }elseif(is_array($result)){
+            if(defined('JSON_UNESCAPED_UNICODE')){
+                echo (json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            }else{
+                echo (json_encode($result));
+            }
+        }elseif(is_null($result)){
+            echo ("NULL");
+        }else{
+            echo ($result);
+        }
+        echo ("\n");
+    }
     C('cms:finish:~');
     if(isset($GLOBALS['C']['DbInfo']) && isset($GLOBALS['C']['console']) && $GLOBALS['C']['console'] && !C('cms:common:isAjax')) {
         $end_time=microtime(true);
@@ -378,6 +404,9 @@ function CMS_init() {
         print_r($GLOBALS['C']);
     }
     if(isset($GLOBALS['hook']['cms:ob_content'])) {ob_end_flush();}
+    if(isset($GLOBALS['C']['MatchFunction']['error'])){
+        exit($GLOBALS['C']['MatchFunction']['error']);
+    }
 }
 function ClassCms_init() {
     CMS_init();
@@ -1402,7 +1431,76 @@ function cli_parse(){
             }
         }
     }
+    if(substr($_SERVER['REQUEST_URI'],0,1)!='/' && strpos($_SERVER['argv'][1],':')){
+        $_SERVER['REQUEST_URI']='';
+        $GLOBALS['C']['MatchUri']=0;
+        $GLOBALS['C']['MatchFunction']=array();
+        $GLOBALS['C']['MatchFunction']['function']=$_SERVER['argv'][1];
+        $GLOBALS['C']['MatchFunction']['args']=array();
+        $GLOBALS['C']['MatchFunction']['other']=array();
+        $otherargs='';
+        foreach ($_SERVER['argv'] as $key => $thisargv) {
+            if($key>1){
+                if(!$GLOBALS['C']['MatchFunction']['other'] && !$otherargs && (substr($thisargv,0,1)!='-' || is_numeric(substr($thisargv,1)))){
+                    $GLOBALS['C']['MatchFunction']['args'][]=parse_argv_array($thisargv);
+                }elseif(substr($thisargv,0,1)=='-'){
+                    $otherargs=substr($thisargv,1);
+                    $GLOBALS['C']['MatchFunction']['other'][$otherargs]='';
+                }elseif($otherargs){
+                    $GLOBALS['C']['MatchFunction']['other'][$otherargs]=parse_argv_array($thisargv);
+                    $thisargv='';
+                }
+            }
+        }
+        if(isset($GLOBALS['C']['MatchFunction']['other']['get']) && is_array($GLOBALS['C']['MatchFunction']['other']['get'])){
+            foreach ($GLOBALS['C']['MatchFunction']['other']['get'] as $key => $value) {
+                $_GET[$key]=$value;
+            }
+        }
+        if(isset($GLOBALS['C']['MatchFunction']['other']['post']) && is_array($GLOBALS['C']['MatchFunction']['other']['post'])){
+            foreach ($GLOBALS['C']['MatchFunction']['other']['post'] as $key => $value) {
+                $_POST[$key]=$value;
+            }
+        }
+        if(isset($GLOBALS['C']['MatchFunction']['other']['user'])){
+            $GLOBALS['C']['admin']['nowuser']=$GLOBALS['C']['MatchFunction']['other']['user'];
+        }
+    }
     return true;
+}
+function parse_argv_array($argv){
+    if(substr($argv,0,1)=='{' && substr($argv,-1)=='}'){
+        return json_decode($argv,1);
+    }
+    if(substr($argv,0,1)!='[' || substr($argv,-1)!=']'){
+        return $argv;
+    }
+    $argv=substr($argv, 1, -1);
+    $argv=str_replace(array('\=','\,'),array('---equal---','---comma---'),$argv);
+    $argv_array=array();
+    $argv_arrays=explode(',',$argv);
+    if(strpos($argv,'=')===false) {
+        foreach ($argv_arrays as $argv_value) {
+            $argv_array[]=str_replace(array('---equal---','---comma---'),array('=',','),$argv_value);
+        }
+    }else {
+        foreach ($argv_arrays as $argv_value) {
+            $argv_values=explode('=',$argv_value);
+            if(!isset($argv_values[1])){ $argv_values[1]=''; }
+            $argv_values[1]=str_replace(array('---equal---','---comma---'),array('=',','),$argv_values[1]);
+            $argv_value_keys=explode('.',$argv_values[0]);
+            if(count($argv_value_keys)==1){
+                $argv_array[$argv_value_keys[0]]=$argv_values[1];
+            }elseif(count($argv_value_keys)==2){
+                $argv_array[$argv_value_keys[0]][$argv_value_keys[1]]=$argv_values[1];
+            }elseif(count($argv_value_keys)==3){
+                $argv_array[$argv_value_keys[0]][$argv_value_keys[1]][$argv_value_keys[2]]=$argv_values[1];
+            }elseif(count($argv_value_keys)==4){
+                $argv_array[$argv_value_keys[0]][$argv_value_keys[1]][$argv_value_keys[2]][$argv_value_keys[3]]=$argv_values[1];
+            }
+        }
+    }
+    return $argv_array;
 }
 function is_hash($hash) {
     if(empty($hash)){return false;}
