@@ -1437,34 +1437,53 @@ function cli_parse(){
         $GLOBALS['C']['MatchFunction']=array();
         $GLOBALS['C']['MatchFunction']['function']=$_SERVER['argv'][1];
         $GLOBALS['C']['MatchFunction']['args']=array();
-        $GLOBALS['C']['MatchFunction']['other']=array();
         $otherargs='';
         foreach ($_SERVER['argv'] as $key => $thisargv) {
             if($key>1){
-                if(!$GLOBALS['C']['MatchFunction']['other'] && !$otherargs && (substr($thisargv,0,1)!='-' || is_numeric(substr($thisargv,1)))){
+                if(substr($thisargv,0,1)!='-' || is_numeric(substr($thisargv,1))){
                     $GLOBALS['C']['MatchFunction']['args'][]=parse_argv_array($thisargv);
-                }elseif(substr($thisargv,0,1)=='-'){
-                    $otherargs=substr($thisargv,1);
-                    $GLOBALS['C']['MatchFunction']['other'][$otherargs]='';
-                }elseif($otherargs){
-                    $GLOBALS['C']['MatchFunction']['other'][$otherargs]=parse_argv_array($thisargv);
-                    $thisargv='';
+                }else{
+                    break;
                 }
             }
         }
-        if(isset($GLOBALS['C']['MatchFunction']['other']['get']) && is_array($GLOBALS['C']['MatchFunction']['other']['get'])){
-            foreach ($GLOBALS['C']['MatchFunction']['other']['get'] as $key => $value) {
-                $_GET[$key]=$value;
+    }
+    $GLOBALS['C']['cliArgs']=array();
+    foreach ($_SERVER['argv'] as $key => $thisargv) {
+        if($key>1){
+            if(substr($thisargv,0,1)=='-' && !is_numeric(substr($thisargv,1))){
+                $cli_args_key=substr($thisargv,1);
+            }elseif($cli_args_key){
+                $GLOBALS['C']['cliArgs'][$cli_args_key]=parse_argv_array($thisargv);
+                $cli_args_key='';
+            }else{
+                $cli_args_key='';
             }
+        }else{
+            $cli_args_key='';
         }
-        if(isset($GLOBALS['C']['MatchFunction']['other']['post']) && is_array($GLOBALS['C']['MatchFunction']['other']['post'])){
-            foreach ($GLOBALS['C']['MatchFunction']['other']['post'] as $key => $value) {
-                $_POST[$key]=$value;
-            }
+    }
+    if(isset($GLOBALS['C']['cliArgs']['get']) && is_array($GLOBALS['C']['cliArgs']['get'])){
+        foreach ($GLOBALS['C']['cliArgs']['get'] as $key => $value) {
+            $_GET[$key]=$value;
         }
-        if(isset($GLOBALS['C']['MatchFunction']['other']['user'])){
-            $GLOBALS['C']['admin']['nowuser']=$GLOBALS['C']['MatchFunction']['other']['user'];
+    }
+    if(isset($GLOBALS['C']['cliArgs']['post']) && is_array($GLOBALS['C']['cliArgs']['post'])){
+        $_SERVER['REQUEST_METHOD']='POST';
+        foreach ($GLOBALS['C']['cliArgs']['post'] as $key => $value) {
+            $_POST[$key]=$value;
         }
+    }
+    if(isset($GLOBALS['C']['cliArgs']['cookie']) && is_array($GLOBALS['C']['cliArgs']['cookie'])){
+        foreach ($GLOBALS['C']['cliArgs']['cookie'] as $key => $value) {
+            $_COOKIE[$key]=$value;
+        }
+    }
+    if(isset($GLOBALS['C']['cliArgs']['uid']) && is_numeric($GLOBALS['C']['cliArgs']['uid'])){
+        $GLOBALS['C']['admin']['nowuser']=intval($GLOBALS['C']['cliArgs']['uid']);
+    }
+    if(isset($GLOBALS['C']['cliArgs']['token']) && is_string($GLOBALS['C']['cliArgs']['token'])){
+        $_SERVER['HTTP_AUTHORIZATION']='Bearer '.$GLOBALS['C']['cliArgs']['token'];
     }
     return true;
 }
