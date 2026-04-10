@@ -87,14 +87,14 @@ class admin_module {
         $module_add_array['modulename']=htmlspecialchars($_POST['modulename']);
         if($id=C('cms:module:add',$module_add_array)) {
             $module=C('cms:module:get',$id);
-            if(isset($_POST['rotues'])) {
+            if(isset($_POST['routes'])) {
                 $defaultRoutes=C('this:module:defaultRoute');
                 $route_add_array=array();
                 $route_add_array['classhash']=$classinfo['hash'];
                 $route_add_array['classorder']=$classinfo['classorder'];
                 $route_add_array['modulehash']=$module['hash'];
                 $route_add_array['moduleorder']=$module['moduleorder'];
-                foreach($_POST['rotues'] as $routes_key) {
+                foreach($_POST['routes'] as $routes_key) {
                     if(isset($defaultRoutes[$routes_key])) {
                         $route_add_array['hash']=$defaultRoutes[$routes_key]['hash'];
                         $route_add_array['uri']=$defaultRoutes[$routes_key]['uri'];

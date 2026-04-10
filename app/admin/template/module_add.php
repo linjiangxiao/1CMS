@@ -41,7 +41,7 @@
         <td align="right"><input type="checkbox" name="page" title="栏目页面" lay-skin="primary" lay-filter="checkall" checked></td>
         <td id="page_list" class="checkbox_list">
         {loop $routes as $key=>$route}
-        <input type="checkbox" name="rotues[]" value="{$key}" title="{$route.title}" lay-filter="checkone" lay-skin="primary"{if !isset($route.checked) || $route.checked} checked{/if}>
+        <input type="checkbox" name="routes[]" value="{$key}" title="{$route.title}" lay-filter="checkone" lay-skin="primary"{if !isset($route.checked) || $route.checked} checked{/if}>
         {/loop}
         </td>
         </tr>
