@@ -36,7 +36,7 @@ class cms {
                     $matched=false;
                 }
                 if($matched && isset($channel['domain']) && !empty($channel['domain'])) {
-                    $matched=macthDomain($channel['domain']);
+                    $matched=matchDomain($channel['domain']);
                 }
                 if($matched) {
                     if(isset($GLOBALS['C']['GET'])) {
@@ -357,7 +357,7 @@ function CMS_init() {
         if(isset($GLOBALS['hook']['cms:ob_content'])) {ob_start('ob_content');}
         foreach($GLOBALS['route'] as $routekey=>$route) {
             $ifmatch=true;
-            if(isset($route['domain']) && !macthDomain($route['domain'])) {$ifmatch=false;}
+            if(isset($route['domain']) && !matchDomain($route['domain'])) {$ifmatch=false;}
             if(strpos($GLOBALS['C']['uri'],'//')!==false){$ifmatch=false;}
             if($ifmatch==false || (isset($route['uri']) && matchUri($route['uri'])===false)) {
             }else {
@@ -805,7 +805,7 @@ function matchUri($uri) {
     }
     Return false;
 }
-function macthDomain($domains) {
+function matchDomain($domains) {
     if(empty($domains)) {Return true;}
     $domains=explode(';',strtolower($domains));
     foreach($domains as $val) {

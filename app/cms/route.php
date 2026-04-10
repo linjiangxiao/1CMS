@@ -155,7 +155,7 @@ class cms_route {
             }
         }
         if(!isset($route['domain'])) {$route['domain']='';}
-        if(!$fullurl && macthDomain($route['domain'])) {
+        if(!$fullurl && matchDomain($route['domain'])) {
             Return $route['uri'];
         }
         $domains=explode(';',strtolower($route['domain']));
