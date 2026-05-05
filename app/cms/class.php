@@ -122,7 +122,11 @@ class cms_class {
                 }
                 Return false;
             }
-            update(array('table'=>'class','enabled'=>'0','installed'=>'1','where'=>array('hash'=>$classhash)));
+            $menu=0;
+            if(is_array(C($classhash.':menu'))){
+                $menu=1;
+            }
+            update(array('table'=>'class','enabled'=>'0','menu'=>$menu,'installed'=>'1','where'=>array('hash'=>$classhash)));
             C('this:class:start',$classhash);
             Return $installinfo;
         }

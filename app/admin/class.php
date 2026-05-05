@@ -376,12 +376,20 @@ class admin_class {
             Return E('安装失败.请先安装依赖应用');
         }
         if($info=C('cms:class:install',$classhash)){
+            $reloadmenu=0;
+            $classinfo=C('cms:class:get',$classhash);
+            if(isset($classinfo['menu']) && $classinfo['menu']){
+                $reloadmenu=1;
+            }
             if($info===true){ $info='安装成功'; }
             if(is_string($info)){
-                return array('msg'=>$info,'popup'=>array('end'=>'reload','btns'=>array('好的'=>'reload')));
+                return array('msg'=>$info,'reloadmenu'=>$reloadmenu,'popup'=>array('end'=>'reload','btns'=>array('好的'=>'reload')));
             }
             if(isset($info['popup']) && !isset($info['popup']['end'])){
                 $info['popup']['end']='reload';
+            }
+            if(!isset($info['reloadmenu'])){
+                $info['reloadmenu']=$reloadmenu;
             }
             return $info;
         }else{
