@@ -163,13 +163,13 @@
 
         {if P('class:changeState')}
         layui.form.on('switch(enabled)', function(obj){
-            layui.admin.req({type:'post',url:"?do=admin:class:changeState",data:{ hash: obj.elem.name, state: obj.elem.checked},async:true,tips:'请稍等...',popup:true,done: function(res){{if $classinfo.menu}layui.admin.events.loadmenu();{/if}}});
+            layui.admin.req({type:'post',url:"?do=admin:class:changeState",data:{ hash: obj.elem.name, state: obj.elem.checked},async:true,tips:'请稍等...',popup:true,done: function(res){layui.admin.events.loadmenu();}});
         });
         {/if}
 
         {if P('class:order')}
         layui.form.on('checkbox(classorder)', function(obj){
-            layui.admin.req({type:'post',url:"?do=admin:class:order",data:{ hash: obj.elem.name, state: obj.elem.checked},async:true,tips:'请稍等...',popup:true,done: function(res){{if $classinfo.menu}layui.admin.events.loadmenu();{/if}}});
+            layui.admin.req({type:'post',url:"?do=admin:class:order",data:{ hash: obj.elem.name, state: obj.elem.checked},async:true,tips:'请稍等...',popup:true,done: function(res){layui.admin.events.loadmenu();}});
         });
         {/if}
         
@@ -183,7 +183,7 @@
         layui.$('#class_install').click(function(){
             var classhash=layui.$(this).attr('rel');
             layer.confirm('确定安装此应用?', {btn: ['安装','取消'],shadeClose:1}, function(){
-                layui.admin.req({type:'post',url:"?do=admin:class:install",data:{ hash: classhash},async:true,tips:'安装中...',popup:true,done: function(res){if(res.reloadmenu){layui.admin.events.loadmenu();}}});
+                layui.admin.req({type:'post',url:"?do=admin:class:install",data:{ hash: classhash},async:true,tips:'安装中...',popup:true,done: function(res){layui.admin.events.loadmenu();}});
             });
             
         });
@@ -191,7 +191,7 @@
         layui.$('#class_uninstall').click(function(){
             var classhash=layui.$(this).attr('rel');
             layer.confirm('确定卸载此应用?<br>应用所属的数据将会被删除!!!{if $filenotfound}<br>强制卸载可能会有数据残留.{else}{$required_tips}{/if}', {btn: ['卸载','取消'],title:'请确认',skin:'layer-danger',shadeClose:1}, function(){
-                layui.admin.req({type:'post',url:"?do=admin:class:uninstall",data:{ hash: classhash{if $filenotfound},filenotfound:1{/if}},async:true,tips:'卸载中...',popup:true,done: function(res){{if $classinfo.menu}layui.admin.events.loadmenu();{/if}}});
+                layui.admin.req({type:'post',url:"?do=admin:class:uninstall",data:{ hash: classhash{if $filenotfound},filenotfound:1{/if}},async:true,tips:'卸载中...',popup:true,done: function(res){layui.admin.events.loadmenu();}});
             });
         });
         {/if}
@@ -211,7 +211,7 @@
             var old_version=layui.$(this).attr('old');
             var new_version=layui.$(this).attr('new');
             layer.confirm('检测到应用版本有变动,是否更新?{if isset($upgradetips) && $upgradetips}<br><br>{$upgradetips}{/if}', {btn: ['更新','取消'],shadeClose:1,'title':'更新',skin:'layer-danger'}, function(){
-                layui.admin.req({type:'post',url:"?do=admin:class:fileUpdate",data:{ hash: classhash,old_version:old_version,new_version:new_version},async:true,tips:'更新中...',popup:true,done: function(res){{if $classinfo.menu}layui.admin.events.loadmenu();{/if}}});
+                layui.admin.req({type:'post',url:"?do=admin:class:fileUpdate",data:{ hash: classhash,old_version:old_version,new_version:new_version},async:true,tips:'更新中...',popup:true,done: function(res){layui.admin.events.loadmenu();}});
             });
         });
         {/if}
