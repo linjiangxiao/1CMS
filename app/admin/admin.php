@@ -17,7 +17,6 @@ class admin {
             Return false;
         }
         begin();
-        update(array('table'=>'class','where'=>array('hash'=>__Class__),'menu'=>1));
         if(!C('cms:user:roleAdd',array('hash'=>'admin','rolename'=>'管理员','enabled'=>1))) {
             rollback();
             Return E('管理员角色增加失败');

@@ -123,7 +123,9 @@ class cms_class {
                 Return false;
             }
             $menu=0;
-            if(is_array(C($classhash.':menu'))){
+            if($classhash=='admin'){
+                $menu=1;
+            }elseif(is_array(C($classhash.':menu'))){
                 $menu=1;
             }
             update(array('table'=>'class','enabled'=>'0','menu'=>$menu,'installed'=>'1','where'=>array('hash'=>$classhash)));
