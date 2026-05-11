@@ -2,40 +2,38 @@
 if(!defined('1cms')) {exit();}
 class layui {
     function stop() {
-        Return E('系统组件,无法停止');
+        return E('系统组件,无法停止');
     }
     function uninstall() {
-        Return E('系统组件,无法卸载');
+        return E('系统组件,无法卸载');
     }
     function css($check=1) {
         if($check && G('css')){return '';}
         G('css',1);
-        Return '<link rel="stylesheet" href="'.template_url().'css/layui.css" media="all">';
+        return '<link rel="stylesheet" href="'.template_url().'css/layui.css" media="all">';
     }
     function js($check=1) {
         if($check && G('js')){return '';}
         G('js',1);
-        Return '<script src="'.template_url().'layui.js"></script>';
+        return '<script src="'.template_url().'layui.js"></script>';
     }
-    function js_all($check=1) {
-        if($check && G('js_all')){return '';}
-        G('js_all',1);
-        Return '<script src="'.template_url().'layui.all.js"></script>';
+    function upgrade($old_version) {
+        return '更新完成,请刷新浏览器缓存';
     }
     function icon_list() {
-        Return array(
+        return array(
             'layui-icon-heart-fill'=>array('实心','&#xe68f;'),
             'layui-icon-heart'=>array('空心','&#xe68c;'),
-            'layui-icon-light'=>array('亮度/晴','&#xe748;'),
             'layui-icon-time'=>array('时间/历史','&#xe68d;'),
-            'layui-icon-bluetooth'=>array('蓝牙','&#xe689;'),
             'layui-icon-at'=>array('@艾特','&#xe687;'),
+            'layui-icon-email'=>array('邮箱','&#xe618;'),
+            'layui-icon-rss'=>array('RSS','&#xe808;'),
+            'layui-icon-sound'=>array('声音','&#xe69d;'),
             'layui-icon-mute'=>array('静音','&#xe685;'),
             'layui-icon-mike'=>array('录音/麦克风','&#xe6dc;'),
             'layui-icon-key'=>array('密钥/钥匙','&#xe683;'),
             'layui-icon-gift'=>array('礼物/活动','&#xe627;'),
-            'layui-icon-email'=>array('邮箱','&#xe618;'),
-            'layui-icon-rss'=>array('RSS','&#xe808;'),
+            'layui-icon-bluetooth'=>array('蓝牙','&#xe689;'),
             'layui-icon-wifi'=>array('WiFi','&#xe7e0;'),
             'layui-icon-logout'=>array('退出/注销','&#xe682;'),
             'layui-icon-android'=>array('Android 安卓','&#xe684;'),
@@ -162,7 +160,7 @@ class layui {
             'layui-icon-triangle-r'=>array('右三角','&#xe623;'),
             'layui-icon-file'=>array('文件','&#xe621;'),
             'layui-icon-set-sm'=>array('设置-小型','&#xe620;'),
-            'layui-icon-reduce-circle'=>array('减少-圆圈','&#xe616'),
+            'layui-icon-reduce-circle'=>array('减少-圆圈','&#xe616;'),
             'layui-icon-add-circle'=>array('添加-圆圈','&#xe61f;'),
             'layui-icon-404'=>array('404','&#xe61c;'),
             'layui-icon-about'=>array('关于','&#xe60b;'),
@@ -192,6 +190,30 @@ class layui {
             'layui-icon-close'=>array('关闭-空心','&#x1006;'),
             'layui-icon-ok-circle'=>array('正确','&#x1005;'),
             'layui-icon-add-circle-fine'=>array('添加-圆圈-细体','&#xe608;'),
+            'layui-icon-bot'=>array('机器人','&#xe7d6;'),
+            'layui-icon-leaf'=>array('叶子节点','&#xe701;'),
+            'layui-icon-folder'=>array('文件夹','&#xeabe;'),
+            'layui-icon-folder-open'=>array('文件夹打开','&#xeac1;'),
+            'layui-icon-gitee'=>array('Gitee','&#xe69b;'),
+            'layui-icon-github'=>array('GitHub','&#xe6a7;'),
+            'layui-icon-light'=>array('太阳/明亮','&#xe748;'),
+            'layui-icon-moon'=>array('月亮','&#xe6c2;'),
+            'layui-icon-error'=>array('错误','&#xe693;'),
+            'layui-icon-success'=>array('成功','&#xe697;'),
+            'layui-icon-question'=>array('问号','&#xe699;'),
+            'layui-icon-lock'=>array('锁定','&#xe69a;'),
+            'layui-icon-eye'=>array('显示','&#xe695;'),
+            'layui-icon-eye-invisible'=>array('隐藏','&#xe696;'),
+            'layui-icon-clear'=>array('清空/删除','&#xe788;'),
+            'layui-icon-backspace'=>array('退格','&#xe694;'),
+            'layui-icon-disabled'=>array('禁用','&#xe6cc;'),
+            'layui-icon-tips-fill'=>array('感叹号/提示','&#xeb2e;'),
+            'layui-icon-test'=>array('测试/K线图','&#xe692;'),
+            'layui-icon-music'=>array('音乐/音符','&#xe690;'),
+            'layui-icon-chrome'=>array('Chrome','&#xe68a;'),
+            'layui-icon-firefox'=>array('Firefox','&#xe686;'),
+            'layui-icon-edge'=>array('Edge','&#xe68b;'),
+            'layui-icon-ie'=>array('IE','&#xe7bb;'),
         );
     }
 }
