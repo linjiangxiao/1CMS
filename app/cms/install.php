@@ -646,12 +646,12 @@ class cms_install {
         }
         $createDatabase=C('this:install:createDatabase',1);
         if(is_string($createDatabase)){
-            echo($createDatabase);
+            echo($createDatabase."\n");
             return false;
         }
         $writeDatabase=C('this:install:writeDatabase',1);
         if($writeDatabase!==true) {
-            echo($writeDatabase);
+            echo($writeDatabase."\n");
             return false;
         }
         if(isset($args['admindir'])){ $config['AdminDir']=$args['admindir']; }else{ $config['AdminDir']='admin'; }
@@ -662,16 +662,16 @@ class cms_install {
         $classes=C('this:install:classList');
         foreach ($classes as $hash=>$class) {
             if(!C('this:class:phpCheck',$hash)) {
-                echo($hash.':PHP版本必须:'.C('this:class:config',$hash,'php'));
+                echo($hash.':PHP版本必须:'.C('this:class:config',$hash,'php')."\n");
                 Return false;
             }
             $thisinstall=C('this:class:install',$hash,0);
             if($thisinstall===false) {
                 if(E()){
-                    echo($hash.':'.E());
+                    echo($hash.':'.E()."\n");
                     Return false;
                 }else{
-                    echo($hash.': error');
+                    echo($hash.": error\n");
                     Return false;
                 }
             }
@@ -687,10 +687,10 @@ class cms_install {
         $config['DbInfo']=$createDatabase;
         $writeConfig=C('this:install:writeConfig',$config);
         if($writeConfig!==true) {
-            echo($writeConfig);
+            echo($writeConfig."\n");
             Return false;
         }
-        echo('success');
+        echo("success\n");
         return true;
     }
     function defaultTable() {
