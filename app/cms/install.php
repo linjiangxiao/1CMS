@@ -379,6 +379,9 @@ class cms_install {
     function sqliteTest($file='') {
         if(empty($file)) {Return ;}
         $file=$GLOBALS['C']['SystemRoot'].$file;
+        if(is_file($file)){
+            @rename($file,$file.'_old_'.date('YmdHis'));
+        }
         if(!$fp = @fopen($file,"w")) {
             Return false;
         }
@@ -437,7 +440,12 @@ class cms_install {
                     Return '权限不足,Sqlite数据库文件写入失败 '.$sqlitefile;
                 }
             }
-            $GLOBALS['C']['DbInfo']=array('kind'=>'sqlitepdo','file'=>$sqlitefile,'prefix'=>$_POST['prefix'],'showerror'=>0);
+            if(isset($_POST['sqlitewal'])) {
+                $sqlitewal=1;
+            }else{
+                $sqlitewal=0;
+            }
+            $GLOBALS['C']['DbInfo']=array('kind'=>'sqlitepdo','file'=>$sqlitefile,'prefix'=>$_POST['prefix'],'showerror'=>0,'wal'=>$sqlitewal);
         }
         if($_POST['database']=="1") {
             $GLOBALS['C']['DbInfo']=array('showerror'=>0);
@@ -589,6 +597,9 @@ class cms_install {
         if(!is_array($tables)) {
             Return '获取数据库字段失败';
         }
+        if(isset($GLOBALS['C']['DbInfo']['wal']) && $GLOBALS['C']['DbInfo']['wal']){
+            query('PRAGMA journal_mode=WAL;');
+        }
         foreach($tables as $key=>$table) {
             $getfieleds=C($GLOBALS['C']['DbClass'].':getFields',$key);
             if(count($getfieleds)) {
@@ -622,6 +633,9 @@ class cms_install {
                 $_POST['sqlitefile']=$args['sqlitefile'];
             }else{
                 $_POST['sqlitefile']='db_'.substr(md5(dirname(__FILE__).date('ymdH').server_name()),0,16);
+            }
+            if(!isset($args['sqlitewal']) || $args['sqlitewal']){
+                $_POST['sqlitewal']=1;
             }
         }else{
             if(isset($args['mysql_host'])){ $_POST['mysql_host']=$args['mysql_host']; }else{ $_POST['mysql_host']='127.0.0.1'; }

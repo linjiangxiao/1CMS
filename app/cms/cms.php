@@ -1621,6 +1621,9 @@ class cms_database {
             }
             $this->databaselink = new PDO('sqlite:'.$db_info['file']);
             $this->databaselink->setAttribute(constant('PDO::ATTR_ORACLE_NULLS'),constant('PDO::NULL_TO_STRING'));
+            if(isset($GLOBALS['C']['DbInfo']['wal']) && $GLOBALS['C']['DbInfo']['wal']){
+                $this->query('PRAGMA synchronous=NORMAL;PRAGMA busy_timeout=5000;');
+            }
         }elseif($db_info['kind']=='mysqlpdo') {
             if(!isset($db_info['dbname']) || empty($db_info['dbname']) || isset($GLOBALS['C']['DbInfo']['createdb'])) {$dbinfo='';}else {$dbinfo='dbname='.$db_info['dbname'];}
             $db_info['hostinfo']=explode(':',$db_info['host']);

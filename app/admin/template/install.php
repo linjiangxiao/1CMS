@@ -76,7 +76,8 @@
                     <div class="layui-tab-content layadmin-user-login-body">
                         <div class="layui-tab-item{if $database=='sqlite'}  layui-show{/if}">
                             <div>{$sqlitefile} {$sqliteinfo}</div>
-                            <input type="hidden" name="sqlitefile" value="{$sqlitefilename}">
+                            <input type="hidden" name="sqlitefile" value="{$sqlitefilename}"><br>
+                            <input type="checkbox" name="sqlitewal" lay-skin="primary" title="开启WAL模式,支持更高读写并发" checked>
                         </div>
                         <div class="layui-tab-item{if $database!='sqlite'}  layui-show{/if}">
                             {if $pdo_mysql || $mysql}
