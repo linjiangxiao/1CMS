@@ -1702,7 +1702,7 @@ class cms_database {
         foreach($args[0] as $name=>$val) {
             $this_sql='';
             $symbol=substr($name,-2);
-            if($symbol=='<>' || $symbol=='>=' || $symbol=='<=') {
+            if($symbol=='<>' || $symbol=='>=' || $symbol=='<=' || $symbol=='!=') {
                 $name=substr($name,0,-2);
             }else {
                 $symbol=substr($name,-1);
@@ -1733,7 +1733,15 @@ class cms_database {
                 }elseif(is_array($val) && !count($val)){
                     $this_sql.='(1=2)';
                 }else {
-                    $this_sql.=$this->escape($name).'=\''.$this->escape($val).'\'';
+                    if($val===null){
+                        $this_sql.=$this->escape($name).' is NULL';
+                    }elseif(substr($val,0,2)=='{{' && substr($val,-2)=='}}') {
+                        $val=ltrim($val,'{{');
+                        $val=rtrim($val,'}}');
+                        $this_sql.=$this->escape($name).'='.$this->escape($val).'';
+                    }else {
+                        $this_sql.=$this->escape($name).'=\''.$this->escape($val).'\'';
+                    }
                 }
             }
             if($symbol==';') {
@@ -1766,7 +1774,7 @@ class cms_database {
                 }
                 $this_sql.=')';
             }
-            if($symbol=='<' || $symbol=='>' || $symbol=='<>' || $symbol=='<='  || $symbol=='>=') {
+            if($symbol=='<' || $symbol=='>' || $symbol=='<>' || $symbol=='<=' || $symbol=='>=' || $symbol=='!=') {
                 if(is_array($val)) {
                     foreach($val as $key=>$this_val) {
                         if($key) {
@@ -1776,7 +1784,15 @@ class cms_database {
                         }
                     }
                 }else {
-                    $this_sql.=$this->escape($name).$symbol.'\''.$this->escape($val).'\'';
+                    if($val===null){
+                        $this_sql.=$this->escape($name).' is NOT NULL';
+                    }elseif(substr($val,0,2)=='{{' && substr($val,-2)=='}}') {
+                        $val=ltrim($val,'{{');
+                        $val=rtrim($val,'}}');
+                        $this_sql.=$this->escape($name).$symbol.$this->escape($val);
+                    }else {
+                        $this_sql.=$this->escape($name).$symbol.'\''.$this->escape($val).'\'';
+                    }
                 }
             }
             if($symbol=='%') {
