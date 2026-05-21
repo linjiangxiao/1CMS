@@ -125,7 +125,11 @@ class cms_class {
             $menu=0;
             if($classhash=='admin'){
                 $menu=1;
+            }elseif($classhash=='shop'){
+                $menu=0;
             }elseif($class['menu']){
+                $menu=1;
+            }elseif($class['adminpage']){
                 $menu=1;
             }elseif(is_array(C($classhash.':menu'))){
                 $menu=1;
