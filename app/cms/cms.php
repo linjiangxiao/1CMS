@@ -1908,12 +1908,37 @@ class cms_database {
         unset($strarray['where']);
         $str='';
         foreach($strarray as $key=>$val) {
-            if($val!==null && substr($val,0,2)=='{{' && substr($val,-2)=='}}') {
-                $val=ltrim($val,'{{');
-                $val=rtrim($val,'}}');
-                $str.=','.$this->escape($key)."=".$this->escape($val);
-            }else {
-                $str.=','.$this->escape($key)."='".$this->escape($val)."'";
+            if($val===null) {
+                $str.=','.$this->escape($key)."=NULL";
+            }else{
+                $symbol=substr($key,-1);
+                if(is_numeric($val) && ($symbol=='+' || $symbol=='-' || $symbol=='*' || $symbol=='/')){
+                    $key=substr($key,0,-1);
+                    $str.=','.$this->escape($key).'='.$this->escape($key).$symbol.$this->escape($val);
+                }elseif($symbol=='='){
+                    $key=substr($key,0,-1);
+                    $str.=','.$this->escape($key)."=".$this->escape($val);
+                }else{
+                    if(substr($val,0,2)=='{{' && substr($val,-2)=='}}'){
+                        $val=ltrim($val,'{{');
+                        $val=rtrim($val,'}}');
+                        if(stripos($val,'+')) {
+                            $thisvals=explode('+',$val);
+                            if($thisvals[0]==$key && is_numeric($thisvals[1])){
+                                $str.=','.$this->escape($key).'='.$this->escape($key).'+'.$this->escape($thisvals[1]);
+                            }
+                        }elseif(stripos($val,'-')) {
+                             $thisvals=explode('-',$val);
+                            if($thisvals[0]==$key && is_numeric($thisvals[1])){
+                                $str.=','.$this->escape($key).'='.$this->escape($key).'-'.$this->escape($thisvals[1]);
+                            }
+                        }else{
+                            $str.=','.$this->escape($key)."='".$this->escape($val)."'";
+                        }
+                    }else{
+                        $str.=','.$this->escape($key)."='".$this->escape($val)."'";
+                    }
+                }
             }
         }
         $str=ltrim($str,',');
