@@ -1735,10 +1735,6 @@ class cms_database {
                 }else {
                     if($val===null){
                         $this_sql.=$this->escape($name).' is NULL';
-                    }elseif(substr($val,0,2)=='{{' && substr($val,-2)=='}}') {
-                        $val=ltrim($val,'{{');
-                        $val=rtrim($val,'}}');
-                        $this_sql.=$this->escape($name).'='.$this->escape($val).'';
                     }else {
                         $this_sql.=$this->escape($name).'=\''.$this->escape($val).'\'';
                     }
@@ -1786,10 +1782,6 @@ class cms_database {
                 }else {
                     if($val===null){
                         $this_sql.=$this->escape($name).' is NOT NULL';
-                    }elseif(substr($val,0,2)=='{{' && substr($val,-2)=='}}') {
-                        $val=ltrim($val,'{{');
-                        $val=rtrim($val,'}}');
-                        $this_sql.=$this->escape($name).$symbol.$this->escape($val);
                     }else {
                         $this_sql.=$this->escape($name).$symbol.'\''.$this->escape($val).'\'';
                     }
