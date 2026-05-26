@@ -44,7 +44,7 @@ class cms_article {
             $config['classhash']=$cids_channel['classhash'];
         }
         if(isset($config['cid'])) {
-            if(!C('this:common:verify',$config['cid'],'id') && $config['cid']!==0) {
+            if(!preg_match("/^[1-9][0-9]*$/",$config['cid']) && $config['cid']!==0) {
                 if(!$channel=C('this:channel:get',$config['cid'],$config['classhash'])) {
                     Return array();
                 }
@@ -135,13 +135,13 @@ class cms_article {
             }
         }
         if(isset($config['page'])) {
-            if(!C('this:common:verify',$config['page'],'id')) {
+            if(!preg_match("/^[1-9][0-9]*$/",$config['page'])) {
                 if(empty($config['page'])) {
                     $config['pagename']='_page';
                 }else {
                     $config['pagename']=$config['page'];
                 }
-                if(C('this:common:verify',@$_GET[$config['pagename']],'id')) {
+                if(isset($_GET[$config['pagename']]) && !is_array($_GET[$config['pagename']]) && preg_match("/^[1-9][0-9]*$/",$_GET[$config['pagename']])) {
                     $config['page']=$_GET[$config['pagename']];
                 }else {
                     $config['page']=1;
