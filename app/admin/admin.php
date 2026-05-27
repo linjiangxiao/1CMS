@@ -32,6 +32,8 @@ class admin {
                 C('cms:input:add','this:input:'.$input);
             }
         }
+        update(array('table'=>'input','where'=>array('groupname'=>'文章'),'inputorder'=>2));
+        update(array('table'=>'input','where'=>array('groupname'=>'用户'),'inputorder'=>3));
         update(array('table'=>'input','where'=>array('groupname'=>'数据库'),'inputorder'=>5));
         update(array('table'=>'input','where'=>array('groupname'=>'系统'),'inputorder'=>10));
         commit();
