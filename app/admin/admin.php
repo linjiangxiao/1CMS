@@ -60,6 +60,10 @@ class admin {
             C('cms:input:add','this:input:channelCheckbox');
             C('cms:input:add','this:input:databasetreeselects');
         }
+        if(version_compare($old_version,'5.9','<')) {
+            update(array('table'=>'input','where'=>array('groupname'=>'文章'),'inputorder'=>2));
+            update(array('table'=>'input','where'=>array('groupname'=>'用户'),'inputorder'=>3));
+        }
     }
     function auth() {
         $auth=array();
