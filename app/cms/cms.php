@@ -647,6 +647,13 @@ function I($level=0){
 }
 function V($file,$vars=array(),$classhash='') {
     if(empty($classhash)) {$classhash=I();}
+    if(strpos($file,':')!==false) {
+        $fileparts=explode(':',$file);
+        if(is_hash($fileparts[0])){
+            $classhash=trim($fileparts[0]);
+            $file=trim($fileparts[1]);
+        }
+    }
     return C('cms:nowView',$file,$vars,$classhash);
 }
 function P($do,$classhash=false,$userid=false) {
@@ -1239,7 +1246,25 @@ function cms_template($template_config) {
                 }
                 $templist[1][$key]="include(include_template(array('file'=>{$thisothertemp},'cache'=>\"{$template_config_new['cache']}\",'nowpath'=>\"{$template_config_new['nowpath']}\",'class'=>\"{$template_config_new['class']}\",'dir'=>\"{$template_config_new['dir']}\",'httpdir'=>\"{$template_config_new['httpdir']}\",'rootpath'=>\"{$template_config_new['rootpath']}\")));";
             }else {
-                $template_config_new['file']=$thisothertemp;
+                if(strpos($thisothertemp,':')!==false) {
+                    $fileparts=explode(':',$thisothertemp);
+                    $targetclass=trim($fileparts[0]);
+                    if(!empty($targetclass) && !empty($fileparts[1]) && is_hash($targetclass)) {
+                        C($targetclass);
+                        $target_template_config= template_config($targetclass);
+                        $template_config_new['cache']=$target_template_config['cache'];
+                        $template_config_new['class']=$targetclass;
+                        $template_config_new['dir']=$target_template_config['dir'];
+                        $template_config_new['httpdir']=$target_template_config['httpdir'];
+                        $template_config_new['rootpath']=$GLOBALS['C']['SystemRoot'].$GLOBALS['C']['ClassDir'].DIRECTORY_SEPARATOR.$targetclass.DIRECTORY_SEPARATOR.$template_config_new['dir'];
+                        $template_config_new['nowpath']=$template_config_new['rootpath'];
+                        $template_config_new['file']=trim($fileparts[1]);
+                    }else{
+                        $template_config_new['file']=$thisothertemp;
+                    }
+                }else {
+                    $template_config_new['file']=$thisothertemp;
+                }
                 $templist[1][$key]='include(\''.include_template($template_config_new).'\');';
             }
         }
