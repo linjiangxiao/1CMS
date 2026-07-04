@@ -214,7 +214,7 @@ class cms_common {
         }
         return true;
     }
-    function upload($name,$path='',$filename='') {
+    function upload($name,$path='',$filename='',$uploadExt='',$uploadSize=0) {
         if(!isset($_FILES[$name])) {Return array('error'=>1,'message'=>'no '.$name);}
         $path=trim($path);
         $filename=trim($filename);
@@ -230,8 +230,14 @@ class cms_common {
             $allfiles[]=$_FILES[$name];
         }
         if(count($allfiles)==0) {Return array('error'=>1,'message'=>'no '.$name);}
-        $uploadExt=C('this:common:uploadExt');
-        $uploadSize=C('this:common:uploadSize');
+        if($uploadExt){
+            $uploadExt=array_filter(explode(';',$uploadExt));
+        }else{
+            $uploadExt=C('this:common:uploadExt');
+        }
+        if(empty($uploadSize)){
+            $uploadSize=C('this:common:uploadSize');
+        }
         $replace_key=array('(ext)','(rand)','(filename)','(Y)','(y)','(m)','(d)','(H)','(h)','(i)','(s)');
         
         foreach($allfiles as $filekey=>$file) {
@@ -286,7 +292,7 @@ class cms_common {
             $allfiles[$filekey]['save_path']=str_replace($replace_key,$replace_value,$path);
             $allfiles[$filekey]['save_name']=str_replace($replace_key,$replace_value,$filename);
             if(empty($allfiles[$filekey]['message'])) {
-                if (!$allfiles[$filekey]['url']=C('this:common:uploadMove',$file['tmp_name'],$allfiles[$filekey]['save_path'],$allfiles[$filekey]['save_name'])) {
+                if (!$allfiles[$filekey]['url']=C('this:common:uploadMove',$file['tmp_name'],$allfiles[$filekey]['save_path'],$allfiles[$filekey]['save_name'],$uploadExt)) {
                     if(E()){
                         $allfiles[$filekey]['message']=$file['name'].' '.E().'.';
                     }else{
@@ -318,9 +324,9 @@ class cms_common {
         Return 104857600;
     }
     function uploadExt() {
-        Return array('gif','jpg','jpeg','png','bmp','ico','blob','psd','webp','doc','docx','xls','xlsx','csv','xml','json','ppt','pptx','txt','zip','7z','gz','bz2','pdf','rar','tar','torrent','exe','apk','ipa','swf','flv','mp3','mp4','wav','wma','wmv','mid','avi','mpg','asf');
+        Return array('gif','jpg','jpeg','png','bmp','ico','blob','psd','webp','doc','docx','xls','xlsx','csv','xml','json','md','ppt','pptx','txt','zip','7z','gz','bz2','pdf','rar','tar','torrent','exe','apk','ipa','swf','flv','mp3','mp4','wav','wma','wmv','mid','avi','mpg','asf');
     }
-    function uploadMove($tempfile,$path='',$filename='') {
+    function uploadMove($tempfile,$path='',$filename='',$uploadExt=array()) {
         if(!is_file($tempfile)) {
             if(isset($_FILES[$tempfile]['tmp_name']) && is_file($_FILES[$tempfile]['tmp_name'])) {
                 $tempfile=$_FILES[$tempfile]['tmp_name'];
@@ -333,7 +339,9 @@ class cms_common {
         }else {
             $temp_arr = explode(".", $filename);
             $file_ext = strtolower(array_pop($temp_arr));
-            $uploadExt=C('this:common:uploadExt');
+            if(!$uploadExt){
+                $uploadExt=C('this:common:uploadExt');
+            }
             if(!in_array($file_ext,$uploadExt)) {
                 return E('不允许的文件类型');
             }
