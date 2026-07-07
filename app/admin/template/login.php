@@ -36,19 +36,20 @@ layui.use(['form'],function(){
             history.replaceState(null, '', url.toString());
         }
     }
-    function loginpost(){
+    window.loginpost=function (){
         var data = layui.form.val("1cms-login-form");
-        layui.admin.req({type:'post',url:"?do=admin:login",data:data,async:true,beforeSend:function(){
+        layui.admin.req({type:'post',url:"?do=admin:login",data:data,async:true,popup:true,beforeSend:function(){
             layui.admin.load('登入中...');
         },done: function(res){
             if (res.error==0)
             {
                 if (res.link) {
                     window.location.href=res.link;
-                }else{
-                    layui.admin.events.reload();
+                    return ;
+                }else if(res.reload === false || res.reload === 0){
+                    return ;
                 }
-                return ;
+                layui.admin.events.reload();
             }
         }});
         return false;
@@ -57,7 +58,7 @@ layui.use(['form'],function(){
     layui.form.on('submit(1cms-login-submit)', function(data){loginpost();});
     device = layui.device();
     if(device.ie && device.ie < 10){
-        alert('IE'+ device.ie + '下浏览效果可能不佳，推荐使用：Chrome / Firefox / Edge 等高级浏览器');
+        alert('IE'+ device.ie + '下浏览效果可能不佳,推荐使用:Chrome/Firefox/Edge等浏览器');
     }
 });
 </script>
