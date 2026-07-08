@@ -14,6 +14,10 @@ class cms_channel {
             foreach($channel_list as $key=>$channel) {
                 $channel_list[$key]=C('this:channel:get',$channel,$channel['classhash']);
             }
+        }else{
+            foreach($channel_list as $key=>$channel) {
+                $channel_list[$key]['name']=$channel['channelname'];
+            }
         }
         Return $channel_list;
     }
@@ -301,6 +305,9 @@ class cms_channel {
                 $channel[$var['hash']]=$var['defaultvalue'];
             }
             $channel[$var['formname']]=$channel[$var['hash']];
+        }
+        if(!isset($channel['name'])){
+            $channel['name']=$channel['channelname'];
         }
         $channel['link']=U($channel);
         if($channel) {
