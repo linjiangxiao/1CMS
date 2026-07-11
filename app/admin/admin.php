@@ -230,7 +230,10 @@ class admin {
         if(!$GLOBALS['C']['admin']['role'][$rolehash]) {
             Return false;
         }
-        if($GLOBALS['C']['admin']['role'][$rolehash]['hash']==C('cms:user:$admin_role')) {
+        if(!isset($GLOBALS['C']['admin']['adminrolehash'])) {
+            $GLOBALS['C']['admin']['adminrolehash']=C('cms:user:$admin_role');
+        }
+        if($GLOBALS['C']['admin']['role'][$rolehash]['hash']==$GLOBALS['C']['admin']['adminrolehash']) {
             if($admin_load) {
                 Return C('this:adminLoadAuth',$do);
             }
