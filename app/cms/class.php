@@ -836,8 +836,15 @@ class cms_class {
         $data['route']=all('table','route','where',where('classhash',$classhash));
         $data['channel']=all('table','channel','where',where('classhash',$classhash));
         $data['hook']=all('table','hook','where',where('classhash',$classhash));
-        $data['auth']=all('table','auth','where',where('classhash',$classhash));
+        $data['auth']=array();
         $data['role']=all('table','role','where',where('classhash',$classhash));
+        if(count($data['role'])){
+            $authWhere=array();
+            foreach ($data['role'] as $role) {
+                $authWhere[]=$role['hash'];
+            }
+            $data['auth']=all('table','auth','where',where('classhash',$classhash,'rolehash',$authWhere));
+        }
         $articleModules=array();
         foreach ($data['form'] as $classForm) {
             if($classForm['kind']=='column' && $classForm['enabled']){
