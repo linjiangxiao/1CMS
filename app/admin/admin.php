@@ -696,6 +696,8 @@ class admin {
             if(is_array($check)){
                 if($check['error']===0 && isset($check['userid'])) {
                     $userid=$check['userid'];
+                }elseif(isset($check['popup'])){
+                    return $check;
                 }else{
                     Return E($check['msg']);
                 }
@@ -705,7 +707,9 @@ class admin {
                 Return E(E());
             }
             $token=C('cms:user:makeToken',$userid);
-            if(!$token){
+            if(is_array($token)){
+                return $token;
+            }elseif(!$token){
                 Return E('Token生成失败');
             }
             if(C('this:adminCookie',$token)) {
