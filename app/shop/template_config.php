@@ -11,7 +11,7 @@ layui.use(['index'],function(){
         layui.$('#requires td').on('click','a',function(){
             var this_require_state = layui.$(this).attr('data-state');
             var this_require_hash = layui.$(this).attr('data-hash');
-            if(this_require_state==4){
+            if(this_require_state==4 || this_require_state==3){
                 layui.admin.popup('?do=shop:index&action=detail&nobread=1&hash='+this_require_hash,this_require_hash);
             }else{
                 layui.admin.popup('?do=admin:class:config&nobread=1&hash='+this_require_hash,this_require_hash);
