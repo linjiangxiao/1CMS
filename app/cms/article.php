@@ -103,17 +103,16 @@ class cms_article {
         if(!isset($config['start'])) {$config['start']=0;}
         if(!isset($config['sql'])) {$config['sql']='';}
         if(isset($config['cids'])) {
-            if(empty($config['sql'])) {
+            if(count($config['cids'])===1){
+                if(!empty($config['sql'])) { $config['sql'].=' and '; }
+                $config['sql'].='cid=\''.$config['cids'][0].'\'';
+            }else{
+                if(!empty($config['sql'])) { $config['sql'].=' and '; }
                 $config['sql'].=where(array('cid'=>$config['cids']));
-            }else {
-                $config['sql'].=' and '.where(array('cid'=>$config['cids']));
             }
         }elseif(isset($config['cid'])) {
-            if(empty($config['sql'])) {
-                $config['sql'].='cid=\''.$config['cid'].'\'';
-            }else {
-                $config['sql'].=' and cid=\''.$config['cid'].'\'';
-            }
+            if(!empty($config['sql'])) { $config['sql'].=' and '; }
+            $config['sql'].='cid=\''.$config['cid'].'\'';
         }
         foreach ($config as $key=>$value) {
             if(substr($key,0,6)=='where.'){
@@ -128,11 +127,8 @@ class cms_article {
             }
         }
         if(isset($config['where'])) {
-            if(empty($config['sql'])) {
-                $config['sql'].=where($config['where']);
-            }else {
-                $config['sql'].=' and '.where($config['where']);
-            }
+            if(!empty($config['sql'])) { $config['sql'].=' and '; }
+            $config['sql'].=where($config['where']);
         }
         if(isset($config['page'])) {
             if(!preg_match("/^[1-9][0-9]*$/",$config['page'])) {
