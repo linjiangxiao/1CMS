@@ -177,6 +177,7 @@ function addcolumn(name,hash,kind){
         layui.$('#columnitem .layui-show tbody tr select:last option[value='+kind+']').attr("selected", true);
     }
     layui.form.render();
+    layui.$('#columnitem .layui-show tbody tr input.formname:last').focus();
 }
 
 layui.$('#savecolumns').click(function(){
@@ -185,6 +186,13 @@ layui.$('#savecolumns').click(function(){
 
 layui.$('#createcolumns').click(function(){
     savecolumns(1);
+});
+
+layui.$(document).on('keydown', function(e){
+    if (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'Enter')) {
+        e.preventDefault();
+        savecolumns(1);
+    }
 });
 
 function savecolumns(enabled){

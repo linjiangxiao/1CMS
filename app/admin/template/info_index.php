@@ -182,6 +182,7 @@ function addinfo(name,hash,kind){
         layui.$('#infoitem .layui-show tbody tr select:last option[value='+kind+']').attr("selected", true);
     }
     layui.form.render();
+    layui.$('#infoitem .layui-show tbody tr input.formname:last').focus();
 }
 
 layui.$('#saveinfos').click(function(){
@@ -190,6 +191,13 @@ layui.$('#saveinfos').click(function(){
 
 layui.$('#createinfos').click(function(){
     saveinfos(1);
+});
+
+layui.$(document).on('keydown', function(e){
+    if (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'Enter')) {
+        e.preventDefault();
+        saveinfos(1);
+    }
 });
 
 function saveinfos(enabled){
