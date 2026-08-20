@@ -499,7 +499,7 @@ class cms_install {
                     }
                 }
             }
-            if($create) {
+            if($create && strtolower($GLOBALS['C']['DbInfo']['user'])=='root') {
                 query('CREATE DATABASE IF NOT EXISTS `'.escape($_POST['mysql_dbname']).'` DEFAULT CHARSET '.$GLOBALS['C']['DbInfo']['charset']);
             }
             $databases_query=query('show databases');
