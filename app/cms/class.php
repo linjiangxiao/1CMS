@@ -883,6 +883,42 @@ class cms_class {
         }
         return $data;
     }
+    function dataOut($classhash,$data=false){
+        if(!$class=C('this:class:get',$classhash)) {
+            return false;
+        }
+        if(!$class['installed'] && !$data){
+            return false;
+        }
+        if(!is_file(classDir($classhash).$classhash.'.php')) {return false;}
+        if(!$data){
+            $data=C('this:class:data',$classhash);
+        }
+        $dataFile=classDir($classhash).$classhash.'.data.php';
+        $dataCount=false;
+        foreach ($data as $key => $thisdata) {
+            if(count($thisdata)){
+                $dataCount=true;
+                break;
+            }
+        }
+        if(!$dataCount){
+            if(is_file($dataFile)){
+                @unlink($dataFile);
+            }
+            return true;
+        }
+        $dataContent='<?php if(!defined(\'1cms\')) {exit();}?>'.json_encode($data);
+        if(!$fp = @fopen($dataFile,"w")) {
+            return false;
+        }
+        if(!@fwrite($fp,$dataContent)){
+            @fclose($fp);
+            return false;
+        }
+        @fclose($fp);
+        return true;
+    }
     function authList($classhash,$function=false){
         if(!is_file(classDir($classhash).$classhash.'.php')) {
             return array();
