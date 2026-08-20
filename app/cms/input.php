@@ -192,6 +192,7 @@ class cms_input {
         if(!isset($config['value'])) {$config['value']='';}
         if(!isset($config['name']) || empty($config['name'])) {Return false;}
         $postvalue=C($config['function'],'post',$config);
+        if(E()){ return array('error'=>E());}
         if(isset($config['nonull']) && $config['nonull'] && is_string($postvalue) && !strlen($postvalue)) {
             $postvalue=false;
         }
