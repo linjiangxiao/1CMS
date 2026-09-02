@@ -43,7 +43,11 @@ class cms_common {
         return 'http://'.C('cms:common:serverName').C('cms:common:serverPort').$_SERVER['REQUEST_URI'];
     }
     function echoJson($array=array()) {
-        echo(json_encode($array));
+        if(defined('JSON_UNESCAPED_UNICODE')){
+            echo(json_encode($array,JSON_UNESCAPED_UNICODE));
+        }else{
+            echo(json_encode($array));
+        }
         Return true;
     }
     function text($html,$length=false,$ellipsis='') {
