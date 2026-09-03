@@ -136,9 +136,7 @@ class cms {
                             unset($_GET[$key]);
                         }
                     }
-                    if($inited) {
-                        Return true;
-                    }
+                    Return $inited;
                 }
             }
             Return false;
@@ -186,6 +184,7 @@ class cms {
                 }
             }
         }
+        $view_return=false;
         if(stripos($_file,'}')===false && stripos($_file,'?')===false && stripos($_file,'>')===false) {
             $C_template_config['file']=$_file;
             $C_template_config['rootpath']=$GLOBALS['C']['SystemRoot'].$GLOBALS['C']['ClassDir'].DIRECTORY_SEPARATOR.$C_template_config['class'].DIRECTORY_SEPARATOR.$C_template_config['dir'];
@@ -201,6 +200,9 @@ class cms {
             array_pop($GLOBALS['C']['running_class']);
         }
         array_pop($GLOBALS['C']['running_class']);
+        if($view_return===1){
+            $view_return=true;
+        }
         Return $view_return;
     }
     function nowTemplate($config){
@@ -361,7 +363,14 @@ function CMS_init() {
             if(strpos($GLOBALS['C']['uri'],'//')!==false){$ifmatch=false;}
             if($ifmatch==false || (isset($route['uri']) && matchUri($route['uri'])===false)) {
             }else {
-                if(C('cms:initRoute',$routekey)!==false) {
+                $routeReturn=C('cms:initRoute',$routekey);
+                if($routeReturn!==false) {
+                    if(is_array($routeReturn)){
+                        header('Content-Type: application/json; charset=utf-8');
+                        C('cms:common:echoJson',$routeReturn);
+                    }elseif(is_string($routeReturn) || is_numeric($routeReturn)){
+                        echo($routeReturn);
+                    }
                     $GLOBALS['C']['route_matched']=$route;
                     break;
                 }
@@ -507,14 +516,11 @@ function C() {
                     }
                     if(isset($route_view)) {
                         if(isset($route_view_article) && is_array($return)) {
-                            $route_view_return=V($route_view,array_merge($route_view_article,$return),$classhash);
+                            $return=V($route_view,array_merge($route_view_article,$return),$classhash);
                         }elseif(isset($route_view_article)) {
-                            $route_view_return=V($route_view,array_merge($route_view_article),$classhash);
+                            $return=V($route_view,array_merge($route_view_article),$classhash);
                         }else {
-                            $route_view_return=V($route_view,$return,$classhash);
-                        }
-                        if($route_view_return===false){
-                            $return=false;
+                            $return=V($route_view,$return,$classhash);
                         }
                     }
                     Return $return;
@@ -609,14 +615,11 @@ function C() {
     }
     if(isset($route_view)) {
         if(isset($route_view_article) && is_array($return)) {
-            $route_view_return=V($route_view,array_merge($route_view_article,$return),$classhash);
+            $return=V($route_view,array_merge($route_view_article,$return),$classhash);
         }elseif(isset($route_view_article)) {
-            $route_view_return=V($route_view,array_merge($route_view_article),$classhash);
+            $return=V($route_view,array_merge($route_view_article),$classhash);
         }else {
-            $route_view_return=V($route_view,$return,$classhash);
-        }
-        if($route_view_return===false){
-            $return=false;
+            $return=V($route_view,$return,$classhash);
         }
     }
     array_pop($GLOBALS['C']['running_class']);
@@ -1057,6 +1060,7 @@ function include_template($template_config) {
     }
     $content=cms_template($template_config);
     if($content===false) {
+        if(!$GLOBALS['C']['Debug']) {Return false;}
         $content='file not found: '.str_replace(array($GLOBALS['C']['SystemRoot'],'/','\\'),'/',$template_config['filepath']);
         if(stripos($template_config['filepath'],'.php')===false){$content.='.php ';}
     }
