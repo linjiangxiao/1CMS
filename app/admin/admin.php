@@ -198,13 +198,13 @@ class admin {
         if(C('this:nologinActionCheck',$do)) {
             Return true;
         }
-        if(C('this:publicActionCheck',$do)) {
-            Return true;
-        }
         if(!$userid) {
             if(!$userid=C('this:nowUser')) {
                 Return false;
             }
+        }
+        if(C('this:publicActionCheck',$do)) {
+            Return true;
         }
         if(!isset($GLOBALS['C']['admin']['user'][$userid])) {
             $GLOBALS['C']['admin']['user'][$userid]=C('cms:user:get',$userid);
