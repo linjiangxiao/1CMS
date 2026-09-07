@@ -1077,24 +1077,39 @@ class cms_class {
         return $auth;
     }
     function getFunctionDoc($function,$hash=false){
+        $empty=array();
+        if($hash){ $empty=false; }
         if(version_compare(PHP_VERSION,'5.6','<')){
-            return false;
+            return $empty;
+        }
+        if(isset($GLOBALS['C']['class_function_doc'][$function])){
+            $doc=$GLOBALS['C']['class_function_doc'][$function];
+            if($doc){
+                if($hash){
+                    if(isset($doc[$hash])){
+                        return $doc[$hash];
+                    }
+                    return false;
+                }
+                return $doc;
+            }
+            return $empty;
         }
         $functions=explode(':',$function);
         if(count($functions)==2){
             $classhash=$functions[0];
             $classname=$functions[0];
             if(!is_hash($classhash)){
-                return false;
+                return $empty;
             }
-            $functionfile=classDir($classhash).'/'.$functions[0].'.php';
+            $functionfile=classDir($classhash).$functions[0].'.php';
             $functionname=$functions[1];
             if(!class_exists($classhash)) {
                 if(is_file($functionfile)) {
                     include_once($functionfile);
                 }
                 if(!class_exists($classhash)) {
-                    return false;
+                    return $empty;
                 }
             }
             
@@ -1102,28 +1117,30 @@ class cms_class {
             $classhash=$functions[0];
             $classname=$classhash.'_'.$functions[1];
             if(!is_hash($classhash)){
-                return false;
+                return $empty;
             }
-            $functionfile=classDir($classhash).'/'.$functions[1].'.php';
+            $functionfile=classDir($classhash).$functions[1].'.php';
             $functionname=$functions[2];
             if(!class_exists($classhash.'_'.$functions[1])) {
                 if(is_file($functionfile)) {
                     include_once($functionfile);
                 }
                 if(!class_exists($classhash.'_'.$functions[1])) {
-                    return false;
+                    return $empty;
                 }
             }
         }else{
-            return false;
+            return $empty;
         }
         $reflection = new ReflectionClass($classname);
         if(!$reflection->hasMethod($functionname)){
-            return false;
+            $GLOBALS['C']['class_function_doc'][$function]=array();
+            return $empty;
         }
         $reflection = new ReflectionMethod($classname,$functionname);
         $docComment = $reflection->getDocComment();
-        if ($docComment !== false && $docParse=C('this:class:docParse',$docComment)) {
+        if ($docComment!==false && $docParse=C('this:class:docParse',$docComment)) {
+            $GLOBALS['C']['class_function_doc'][$function]=$docParse;
             if($hash){
                 if(isset($docParse[$hash])){
                     return $docParse[$hash];
@@ -1132,7 +1149,8 @@ class cms_class {
             }
             return $docParse;
         }
-        return array();
+        $GLOBALS['C']['class_function_doc'][$function]=array();
+        return $empty;
     }
     function getClassFunctions($classhash){
         if(version_compare(PHP_VERSION,'5.6','<')){
@@ -1223,10 +1241,7 @@ class cms_class {
                 $array[$key]=$thisvalue[0];
             }
         }
-        if($array){
-            return $array;
-        }
-        return false;
+        return $array;
     }
     function unzip($src_file, $dest_dir=false, $create_zip_name_dir=true, $overwrite=true) 
     {
