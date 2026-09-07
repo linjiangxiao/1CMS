@@ -86,6 +86,7 @@ class admin_class {
                 if($array['classinfo']['classversion']!=$array['new_version']) {
                     C('cms:common:opcacheReset');
                     $array['upgradetips']=C('cms:class:config',$array['classinfo']['hash'],'upgrade');
+                    $array['upgradetips']=str_replace(';',';<br>',$array['upgradetips']);
                 }
                 $array['description']=C('cms:class:config',$array['classinfo']['hash'],'description');
                 $array['setting']=total('form',where(array('classhash'=>$array['classinfo']['hash'],'kind'=>'config','enabled'=>1)));
