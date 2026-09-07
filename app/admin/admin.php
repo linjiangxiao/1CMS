@@ -112,27 +112,32 @@ class admin {
         }
         $classinfo=C('cms:class:get',$doclass[0]);
         if(!$classinfo || !$classinfo['enabled']) {
+            $errormsg='应用不存在';
             if($doclass[0]=='admin' && $doclass[1]=='login'){
-                Return C('this:error','数据库连接失败');
+                $errormsg='数据库连接失败';
+            }
+            if(isset($classinfo['enabled']) && !$classinfo['enabled']){
+                $errormsg='应用未启用';
             }
             if(C('cms:common:isAjax')) {
-                Return C('this:ajax','无权限',1,1001);
+                Return C('this:ajax',$errormsg,1);
             }else {
-                Return C('this:error','无权限');
+                Return C('this:error',$errormsg);
             }
         }
         if(!C('this:check',$do,$userid,true)) {
             if(C('cms:common:isAjax')) {
-                Return C('this:ajax','无权限',1,1001);
+                Return C('this:ajax','无权限',1);
             }
             Return C('this:error','无权限');
         }
         if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD']=='POST' && !C('this:nologinActionCheck',$do) && !C('this:publicActionCheck',$do)) {
             if(!C('this:csrfCheck',1)) {
+                $errormsg='非法提交,请刷新当前页面或重新登入系统';
                 if(C('cms:common:isAjax')) {
-                    Return C('this:ajax','非法提交,请刷新当前页面或重新登入系统',1,1001);
+                    Return C('this:ajax',$errormsg,1,1002);
                 }else {
-                    Return C('this:error','非法提交,请刷新当前页面或重新登入系统');
+                    Return C('this:error',$errormsg);
                 }
             }
         }
@@ -142,7 +147,7 @@ class admin {
             Return true;
         }elseif(is_array($return)){
             Return C('this:ajax',$return);
-        }elseif(is_string($return)){
+        }elseif(is_string($return) || is_numeric($return)){
             if(C('cms:common:isAjax')) {
                 Return C('this:ajax',$return);
             }else {
