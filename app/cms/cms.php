@@ -96,17 +96,12 @@ class cms {
                             $article=C('this:nowArticle',$GLOBALS['C']['channel'],$article);
                             $GLOBALS['C']['article']=$article;
                         }else{
-                            unset($GLOBALS['C']['routekey']);
                             $matched=false;
                         }
                     }
                 }
                 if($matched) {
-                    if(isset($GLOBALS['C']['GET'])) {
-                        foreach($GLOBALS['C']['GET'] as $key=>$val) {
-                            $_GET[$key]=$val;
-                        }
-                    }
+                    if(isset($GLOBALS['C']['GET'])) { foreach($GLOBALS['C']['GET'] as $key=>$val) { $_GET[$key]=$val; } }
                     if(isset($thisroute['classview']) && !empty($thisroute['classview'])) {
                         preg_match_all('/[(](.*)[)]/U',$thisroute['classview'],$classviewargs);
                         foreach ($classviewargs[1] as $key => $classviewarg) {
@@ -126,17 +121,19 @@ class cms {
                         }
                     }
                     $thisroute=C('this:nowRoute',$thisroute);
+                    if($thisroute['classfunction']!==$thisroute['classhash'] && strlen(C('cms:class:getFunctionDoc',$thisroute['classfunction'],'auth')) && !P($thisroute['classfunction'],$thisroute['classhash'])){
+                        if(isset($GLOBALS['C']['GET'])) { foreach($GLOBALS['C']['GET'] as $key=>$val) { unset($_GET[$key]); } }
+                        Return false;
+                    }
                     if(count($article_where)){
                         $inited=C($thisroute['classfunction'],$channel,$article);
                     }else{
                         $inited=C($thisroute['classfunction'],$channel);
                     }
-                    if(isset($GLOBALS['C']['GET'])) {
-                        foreach($GLOBALS['C']['GET'] as $key=>$val) {
-                            unset($_GET[$key]);
-                        }
+                    if(isset($GLOBALS['C']['GET'])) { foreach($GLOBALS['C']['GET'] as $key=>$val) { unset($_GET[$key]); } }
+                    if($inited!==false && $inited!==null){
+                        Return $inited;
                     }
-                    Return $inited;
                 }
             }
             Return false;
@@ -145,18 +142,14 @@ class cms {
             if(isset($thisroute['classview']) && !empty($thisroute['classview'])) {
                 $GLOBALS['C']['route_view'][$thisroute['classfunction']]=$thisroute['classview'];
             }
-            if(isset($GLOBALS['C']['GET'])) {
-                foreach($GLOBALS['C']['GET'] as $key=>$val) {
-                    $_GET[$key]=$val;
-                }
-            }
+            if(isset($GLOBALS['C']['GET'])) { foreach($GLOBALS['C']['GET'] as $key=>$val) { $_GET[$key]=$val; } }
             $thisroute=C('this:nowRoute',$thisroute);
-            $inited=C($thisroute['classfunction']);
-            if(isset($GLOBALS['C']['GET'])) {
-                foreach($GLOBALS['C']['GET'] as $key=>$val) {
-                    unset($_GET[$key]);
-                }
+            if($thisroute['classfunction']!==$thisroute['classhash'] && strlen(C('cms:class:getFunctionDoc',$thisroute['classfunction'],'auth')) && !P($thisroute['classfunction'],$thisroute['classhash'])){
+                if(isset($GLOBALS['C']['GET'])) { foreach($GLOBALS['C']['GET'] as $key=>$val) { unset($_GET[$key]); } }
+                Return false;
             }
+            $inited=C($thisroute['classfunction']);
+            if(isset($GLOBALS['C']['GET'])) { foreach($GLOBALS['C']['GET'] as $key=>$val) { unset($_GET[$key]); } }
             Return $inited;
         }
     }
@@ -364,7 +357,7 @@ function CMS_init() {
             if($ifmatch==false || (isset($route['uri']) && matchUri($route['uri'])===false)) {
             }else {
                 $routeReturn=C('cms:initRoute',$routekey);
-                if($routeReturn!==false) {
+                if($routeReturn!==false && $routeReturn!==null) {
                     if(is_array($routeReturn)){
                         header('Content-Type: application/json; charset=utf-8');
                         C('cms:common:echoJson',$routeReturn);
@@ -373,6 +366,8 @@ function CMS_init() {
                     }
                     $GLOBALS['C']['route_matched']=$route;
                     break;
+                }else{
+                    unset($GLOBALS['C']['routekey'],$GLOBALS['C']['route_view'],$GLOBALS['C']['route_view_article']);
                 }
             }
         }
