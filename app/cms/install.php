@@ -123,11 +123,11 @@ class cms_install {
                 $array['infos'][]=array('name'=>'缓存目录('.$GLOBALS['C']['CacheDir'].')','value'=>'无权限,无法安装','error'=>1);
                 $array['allow']=false;
                 echo('permission denied:'.cacheDir());
-                Return ;
+                return true;
             }
         }else {
             echo('Unable to create directory:'.cacheDir());
-            Return ;
+            return true;
         }
         if(C('this:install:makeDir',$GLOBALS['C']['UploadDir'])) {
             if(C('this:install:dirTest',$GLOBALS['C']['UploadDir'])) {
@@ -178,7 +178,7 @@ class cms_install {
         if(!$array['classlist']){
             $array['allow']=false;
         }
-        V('install',$array);
+        return V('install',$array);
     }
     function installDefaultSetting(){
         if(isset($GLOBALS['install']['database']) && $GLOBALS['install']['database']){
@@ -345,7 +345,7 @@ class cms_install {
     }
     function rewrite() {
         echo(json_encode(array('test'=>'ok')));
-        Return ;
+        Return true;
     }
     function goInstall() {
         echo('<meta http-equiv=refresh content="0; url='.$GLOBALS['C']['SystemDir'].'">');
