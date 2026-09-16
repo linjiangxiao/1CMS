@@ -13,6 +13,15 @@ class admin_class {
             'class:menu'=>'后台菜单'
         );
     }
+    function maxshow() {
+        $pagesize=50;
+        $class_count=total('class');
+        if($class_count>=$pagesize) {
+            Return $pagesize;
+        }else {
+            Return false;
+        }
+    }
     function index() {
         $classlist=C('cms:class:all');
         $newclass=array();
@@ -42,7 +51,39 @@ class admin_class {
                 }
             }
         }
-        $array['classlist']=C('cms:class:all');
+        $class_list_query=array();
+        $maxshow=C('this:class:maxshow');
+        if($maxshow){
+            $array['showpage']=1;
+            $array['showsearch']=1;
+            $class_list_query['page']=page('pagesize',$maxshow);
+            $array['gets']=$_GET;
+            foreach ($array['gets'] as $key =>$thisget) {
+                $array['gets'][$key]=htmlspecialchars($thisget);
+            }
+            if(isset($array['gets']['page'])){
+                $array['gets']['page']=1;
+            }
+            if(isset($array['gets']['appkeyword'])){
+                $array['appkeyword']=$array['gets']['appkeyword'];
+            }else{
+                $array['appkeyword']='';
+            }
+            unset($array['gets']['appkeyword']);
+        }else{
+            $array['showpage']=0;
+            $array['showsearch']=0;
+        }
+        $class_list_query['table']='class';
+        $class_list_query['order']='enabled desc,classorder desc,id asc';
+        $class_list_query['where']=array();
+        if(isset($_GET['appkeyword']) && $_GET['appkeyword']){
+            $class_list_query['where']['appkeyword;']=array('classname%'=>$_GET['appkeyword'],'hash%'=>$_GET['appkeyword']);
+        }
+        if($listWhere=C('this:class:listWhere:~',$class_list_query['where'])) {
+            $class_list_query['where']=$listWhere;
+        }
+        $array['classlist']=all($class_list_query);
         $array['newclass']='';
         if(count($newclass)) {
             foreach($newclass as $this_new) {
@@ -51,7 +92,7 @@ class admin_class {
                 }else{
                     $this_name=$this_new;
                 }
-                $array['newclass'].=' <a class="layui-btn layui-btn-xs layui-btn-normal" href="?do=admin:class:config&hash='.$this_new.'">'.$this_name.'</a>';
+                $array['newclass'].=' <button class="layui-btn layui-btn-xs layui-btn-normal" layadmin-event="popup" href="?do=admin:class:config&hash='.$this_new.'">'.$this_name.'</button>';
             }
         }
         $array['auth']['class_config']=P('class:config');

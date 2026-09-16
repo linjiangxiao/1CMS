@@ -24,6 +24,29 @@
                 新增应用:{$newclass}
             </blockquote>
             {/if}
+            {if $showsearch}
+            <form method="get" action="" id="classsearch_form">
+                {loop $gets as $key=>$val}
+                <input type="hidden" name="{htmlspecialchars($key)}" value="{$val}">
+                {/loop}
+                <div class="layui-input-inline" style="position: relative;">
+                <input maxlength="30" type="text" name="appkeyword" value="{$appkeyword}" class="layui-input" style="width:204px;height:30px;">
+                {if $appkeyword}
+                <i id="classsearch_clearsearch" class="layui-icon layui-icon-close" style="position:absolute;right:3px;top:4px;font-size:16px;font-weight:bold;cursor:pointer"></i>
+                <script>
+                layui.use(['index'],function(){
+                    layui.$('#classsearch_clearsearch').click(function(){
+                        layui.$('input[name=page]').val(1);
+                        layui.$('input[name=appkeyword]').val('');
+                        layui.$('#classsearch_form').submit();
+                    });
+                });
+                </script>
+                {/if}
+                </div>
+                <button type="submit" class="layui-btn  layui-btn-sm layui-btn-normal">搜索</button>
+            </form>
+            {/if}
             <table class="layui-table" lay-skin="line" >
             <colgroup>
               <col>
@@ -66,6 +89,7 @@
 <div class="layui-row">
     <div id="cms-left-bottom-button" class="layui-btn-container"></div>
     <div id="cms-right-bottom-button" class="layui-btn-container">
+        {if $showpage}{this:pagelist()}{/if}
     </div>
 </div>
           </div>
