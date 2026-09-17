@@ -25,6 +25,29 @@
 {if isset($home_channel_routes_tips) && $home_channel_routes_tips}
 <blockquote class="layui-elem-quote layui-text"> {$home_channel_routes_tips}</blockquote>
 {/if}
+{if $showsearch}
+<form method="get" action="" id="channelsearch_form">
+    {loop $gets as $key=>$val}
+    <input type="hidden" name="{htmlspecialchars($key)}" value="{$val}">
+    {/loop}
+    <div class="layui-input-inline" style="position: relative;">
+    <input maxlength="30" type="text" name="channelkeyword" value="{$channelkeyword}" class="layui-input" style="width:204px;height:30px;">
+    {if $channelkeyword}
+    <i id="channelsearch_clearsearch" class="layui-icon layui-icon-close" style="position:absolute;right:3px;top:4px;font-size:16px;font-weight:bold;cursor:pointer"></i>
+    <script>
+    layui.use(['index'],function(){
+        layui.$('#channelsearch_clearsearch').click(function(){
+            layui.$('input[name=page]').val(1);
+            layui.$('input[name=channelkeyword]').val('');
+            layui.$('#channelsearch_form').submit();
+        });
+    });
+    </script>
+    {/if}
+    </div>
+    <button type="submit" class="layui-btn  layui-btn-sm layui-btn-normal">搜索</button>
+</form>
+{/if}
 <table class="layui-table" lay-skin="line"  lay-size1="sm">
          <thead>
           <tr>

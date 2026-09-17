@@ -10,7 +10,7 @@ class admin_channel {
         );
     }
     function maxshow($classhash) {
-        $pagesize=300;
+        $pagesize=150;
         $channel_count=total('channel',where(array('classhash'=>$classhash)));
         if($channel_count>=$pagesize) {
             Return $pagesize;
@@ -40,14 +40,38 @@ class admin_channel {
         if(!$array['classinfo']['module']) {Return E('此应用['.$_GET['classhash'].'] 未开启模型配置选项');}
         if($maxshow=C('this:channel:maxshow',$array['classinfo']['hash'])) {
             $array['showpage']=1;
+            $array['showsearch']=1;
+            $array['gets']=$_GET;
+            foreach ($array['gets'] as $key =>$thisget) {
+                $array['gets'][$key]=htmlspecialchars($thisget);
+            }
+            if(isset($array['gets']['page'])){
+                $array['gets']['page']=1;
+            }
+            if(isset($array['gets']['channelkeyword'])){
+                $array['channelkeyword']=$array['gets']['channelkeyword'];
+            }else{
+                $array['channelkeyword']='';
+            }
+            unset($array['gets']['channelkeyword']);
             $channel_list_query=array();
             $channel_list_query['page']=page('pagesize',$maxshow);
             $channel_list_query['table']='channel';
             $channel_list_query['where']=array('fid'=>$array['fid'],'classhash'=>$array['classinfo']['hash']);
             $channel_list_query['order']='channelorder asc,id asc';
+            if(isset($_GET['channelkeyword']) && $_GET['channelkeyword']){
+                $channel_list_query['where']['channelname%']=$_GET['channelkeyword'];
+                if(!$array['fid']){
+                    unset($channel_list_query['where']['fid']);
+                }
+            }
+            if($listWhere=C('this:channel:listWhere:~',$channel_list_query['where'])) {
+                $channel_list_query['where']=$listWhere;
+            }
             $array['channels']=all($channel_list_query);
         }else {
             $array['showpage']=0;
+            $array['showsearch']=0;
             $array['channels']=C('cms:channel:tree',$array['fid'],$array['classinfo']['hash']);
             if(isset($array['channels'][0]) && P('route:edit')){
                 $home_channel_routes=C('cms:route:all',$array['channels'][0]['modulehash'],$array['channels'][0]['classhash']);
@@ -71,7 +95,7 @@ class admin_channel {
                     break;
                 }
             }
-            if(!$allowed){ 
+            if(!$allowed){
                 $array['channels']=C('this:channel:hideDisabledChannel',$array['channels'],$this_channel['id']);
             }
         }
