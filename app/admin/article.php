@@ -626,6 +626,9 @@ class admin_article {
         if(!$class['enabled'] && !P('class:changestate')) {
             Return false;
         }
+        if(!$channel['_module']['enabled'] && !P('module:edit')) {
+            Return false;
+        }
         Return $channel;
     }
     function editEnabled($cid=0,$id=0,$userid=0,$moduleAuthEdit=0,$moduleAuthLimit=1) {

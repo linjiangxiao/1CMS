@@ -374,7 +374,14 @@ class admin_channel {
         $allModules=C('cms:module:all',$classhash);
         $modules=array();
         foreach ($allModules as $module) {
+            $allow=0;
             if(C('this:moduleAuth',$module,'list') || C('this:moduleAuth',$module,'add') || C('this:moduleAuth',$module,'edit') || C('this:moduleAuth',$module,'var')) {
+                $allow=1;
+            }
+            if(!$module['enabled'] && !P('module:edit')){
+                $allow=0;
+            }
+            if($allow){
                 $modules[]=$module;
             }
         }
