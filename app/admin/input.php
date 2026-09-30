@@ -873,26 +873,15 @@ class admin_input {
             foreach($config['values'] as $key=>$val) {
                 $val=htmlspecialchars($val);
                 if(!empty($val)) {
-                    if($config['savetype']==1) {
-                        $val=str_replace('\\:','---colon---',$val);
-                        $thisvalue=explode(':',$val);
-                        $thisvalue[0]=str_replace('---colon---',':',$thisvalue[0]);
-                        if(!isset($thisvalue[1])) {$thisvalue[1]=$thisvalue[0];}else {$thisvalue[1]=str_replace('---colon---',':',$thisvalue[1]);}
-                        if(!isset($thisvalue[2])) {$thisvalue[2]='';}
-                        if($config['disabled']) {$thisvalue[2]='disabled';}
-                        if($config['value']==$thisvalue[0]) {$thisvalue[3]='checked';}
-                        if(!isset($thisvalue[3])) {$thisvalue[3]='';}
-                        $values[]=$thisvalue;
-                    }else {
-                        $thisvalue=array();
-                        $thisvalue[0]=$val;
-                        $thisvalue[1]=$val;
-                        if(!isset($thisvalue[2])) {$thisvalue[2]='';}
-                        if($config['disabled']) {$thisvalue[2]='disabled';}
-                        if($config['value']==$val) {$thisvalue[3]='checked';}
-                        if(!isset($thisvalue[3])) {$thisvalue[3]='';}
-                        $values[]=$thisvalue;
-                    }
+                    $val=str_replace('\\:','---colon---',$val);
+                    $thisvalue=explode(':',$val);
+                    $thisvalue[0]=str_replace('---colon---',':',$thisvalue[0]);
+                    if(!isset($thisvalue[1])) {$thisvalue[1]=$thisvalue[0];}else {$thisvalue[1]=str_replace('---colon---',':',$thisvalue[1]);}
+                    if(!isset($thisvalue[2])) {$thisvalue[2]='';}
+                    if($config['disabled']) {$thisvalue[2]='disabled';}
+                    if($config['value']==$thisvalue[0]) {$thisvalue[3]='checked';}
+                    if(!isset($thisvalue[3])) {$thisvalue[3]='';}
+                    $values[]=$thisvalue;
                 }
             }
         }
@@ -930,14 +919,15 @@ class admin_input {
                 }
                 foreach($values as $thisvalue) {
                     if($_POST[$config['name']]==$thisvalue[0] && $thisvalue[2]!='disabled') {
+                        if($config['savetype']==1 && !is_numeric($thisvalue[0])) {Return false;}
                         Return $thisvalue[0];
                     }
                 }
                 Return false;
             case 'config':
                 Return array(
-                            array('configname'=>'保存类型','hash'=>'savetype','inputhash'=>'radio','tips'=>'切换保存类型会丢失信息,请提前确认好保存类型','defaultvalue'=>'1','values'=>"1:值\n2:标题",'savetype'=>1),
-                            array('configname'=>'选项','hash'=>'values','inputhash'=>'textarea','tips'=>'一行一个选项.当保存类型为\'值\'时,每行选项的格式为 值:标题 如: 1:男'),
+                            array('configname'=>'保存类型','hash'=>'savetype','inputhash'=>'radio','tips'=>'切换保存类型会丢失信息,请提前确认好保存类型','defaultvalue'=>'1','values'=>"1:数值\n2:字符串",'savetype'=>1),
+                            array('configname'=>'选项','hash'=>'values','inputhash'=>'textarea','tips'=>'一行一个选项.类型为\'数值\'时,格式为 数值:标题 如: 1:男  , 类型为\'字符串时\',格式为 标题 或 值:标题 如: 男 或 male:男'),
                         );
         }
         Return false;
@@ -1080,26 +1070,15 @@ class admin_input {
             foreach($config['values'] as $key=>$val) {
                 $val=htmlspecialchars($val);
                 if(!empty($val)) {
-                    if($config['savetype']==1) {
-                        $val=str_replace('\\:','---colon---',$val);
-                        $thisvalue=explode(':',$val);
-                        $thisvalue[0]=str_replace('---colon---',':',$thisvalue[0]);
-                        if(!isset($thisvalue[1])) {$thisvalue[1]=$thisvalue[0];}else {$thisvalue[1]=str_replace('---colon---',':',$thisvalue[1]);}
-                        if(!isset($thisvalue[2])) {$thisvalue[2]='';}
-                        if($config['disabled']) {$thisvalue[2]='disabled';}
-                        if($config['value']==$thisvalue[0]) {$thisvalue[3]='selected';}
-                        if(!isset($thisvalue[3])) {$thisvalue[3]='';}
-                        $values[]=$thisvalue;
-                    }else {
-                        $thisvalue=array();
-                        $thisvalue[0]=$val;
-                        $thisvalue[1]=$val;
-                        if(!isset($thisvalue[2])) {$thisvalue[2]='';}
-                        if($config['disabled']) {$thisvalue[2]='disabled';}
-                        if($config['value']==$val) {$thisvalue[3]='selected';}
-                        if(!isset($thisvalue[3])) {$thisvalue[3]='';}
-                        $values[]=$thisvalue;
-                    }
+                    $val=str_replace('\\:','---colon---',$val);
+                    $thisvalue=explode(':',$val);
+                    $thisvalue[0]=str_replace('---colon---',':',$thisvalue[0]);
+                    if(!isset($thisvalue[1])) {$thisvalue[1]=$thisvalue[0];}else {$thisvalue[1]=str_replace('---colon---',':',$thisvalue[1]);}
+                    if(!isset($thisvalue[2])) {$thisvalue[2]='';}
+                    if($config['disabled']) {$thisvalue[2]='disabled';}
+                    if($config['value']==$thisvalue[0]) {$thisvalue[3]='selected';}
+                    if(!isset($thisvalue[3])) {$thisvalue[3]='';}
+                    $values[]=$thisvalue;
                 }
             }
         }
@@ -1153,14 +1132,15 @@ class admin_input {
                 }
                 foreach($values as $thisvalue) {
                     if($_POST[$config['name']]==$thisvalue[0] && $thisvalue[2]!='disabled') {
+                        if($config['savetype']==1 && !is_numeric($thisvalue[0])) {Return false;}
                         Return $thisvalue[0];
                     }
                 }
                 Return false;
             case 'config':
                 Return array(
-                            array('configname'=>'保存类型','hash'=>'savetype','inputhash'=>'radio','tips'=>'切换保存类型会丢失信息,请提前确认好保存类型','defaultvalue'=>'1','values'=>"1:值\n2:标题",'savetype'=>1),
-                            array('configname'=>'选项','hash'=>'values','inputhash'=>'textarea','tips'=>'一行一个选项.当保存类型为\'值\'时,每行选项的格式为 值:标题 如: 1:男'),
+                            array('configname'=>'保存类型','hash'=>'savetype','inputhash'=>'radio','tips'=>'切换保存类型会丢失信息,请提前确认好保存类型','defaultvalue'=>'1','values'=>"1:数值\n2:字符串",'savetype'=>1),
+                            array('configname'=>'选项','hash'=>'values','inputhash'=>'textarea','tips'=>'一行一个选项.类型为\'数值\'时,格式为 数值:标题 如: 1:男  , 类型为\'字符串时\',格式为 标题 或 值:标题 如: 男 或 male:男'),
                             array('configname'=>'默认文字','hash'=>'selecttitle','inputhash'=>'text','tips'=>'未选择时列表框的默认文字,不填则不显示','defaultvalue'=>'请选择'),
                             array('configname'=>'默认值','hash'=>'selectvalue','inputhash'=>'text','tips'=>'未选择时列表框的默认值','defaultvalue'=>'0'),
                             array('configname'=>'搜索','hash'=>'search','inputhash'=>'switch','tips'=>'当选项太多时,开启搜索功能可以快速找到对应的选项'),
