@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:alpine
+    image: nginx:1.31.8
     restart: unless-stopped
     ports:
       - "10099:80"
@@ -13,7 +13,7 @@ services:
       - 1cms
 
   php:
-    image: 1cms/1cms:fpm74
+    image: 1cms/1cms:fpm84
     restart: unless-stopped
     volumes:
       - ./:/var/www/html
