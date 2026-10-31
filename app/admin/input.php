@@ -919,7 +919,6 @@ class admin_input {
                 }
                 foreach($values as $thisvalue) {
                     if($_POST[$config['name']]==$thisvalue[0] && $thisvalue[2]!='disabled') {
-                        if($config['savetype']==1 && !is_numeric($thisvalue[0])) {Return false;}
                         Return $thisvalue[0];
                     }
                 }
@@ -1132,7 +1131,6 @@ class admin_input {
                 }
                 foreach($values as $thisvalue) {
                     if($_POST[$config['name']]==$thisvalue[0] && $thisvalue[2]!='disabled') {
-                        if($config['savetype']==1 && !is_numeric($thisvalue[0])) {Return false;}
                         Return $thisvalue[0];
                     }
                 }
