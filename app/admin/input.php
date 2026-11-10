@@ -823,13 +823,11 @@ class admin_input {
                     if(!isset($_POST[$config['name'].'_2'])) {
                         $_POST[$config['name'].'_2']='';
                     }
-                    if($post_password!=trim($_POST[$config['name'].'_2'])) {
+                    if($post_password!==trim($_POST[$config['name'].'_2'])) {
                         Return false;
                     }
                 }
-                if(empty($post_password)) {
-                    Return null;
-                }
+                if($post_password==='') { Return null; }
                 if(isset($config['min']) && $config['min'] && strlen($post_password)<$config['min']) {
                     Return false;
                 }

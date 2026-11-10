@@ -36,7 +36,7 @@ class admin_my {
         }
         $array['password_input']=array('name'=>'passwd','inputhash'=>'password','checkold'=>1,'value'=>$array['userinfo']['passwd']);
         $my_edit_query['passwd']=C('cms:input:post',$array['password_input']);
-        if(!$my_edit_query['passwd']) {
+        if(!is_string($my_edit_query['passwd']) || $my_edit_query['passwd']==='') {
             unset($my_edit_query['passwd']);
         }
         if(C('cms:user:edit',$my_edit_query)){

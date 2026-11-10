@@ -31,7 +31,7 @@ class cms_user {
         }
         $user_add_query['table']='user';
         if(!isset($user_add_query['enabled'])) {$user_add_query['enabled']=1;}
-        if(!isset($user_add_query['passwd'])) {Return false;}
+        if(!isset($user_add_query['passwd']) || !strlen($user_add_query['passwd'])) {Return false;}
         $user_add_query['passwd']=C('this:user:passwd2md5',$user_add_query['passwd']);
         $infos=C('this:form:all','info');
         $infos=C('this:form:getColumnCreated',$infos,'user');
@@ -91,7 +91,7 @@ class cms_user {
         }
         $user_edit_query['table']='user';
         $user_edit_query['where']=array('id'=>$userinfo['id']);
-        if(!empty($user_edit_query['passwd'])) {
+        if(isset($user_edit_query['passwd']) && strlen($user_edit_query['passwd'])) {
             $user_edit_query['passwd']=C('this:user:passwd2md5',$user_edit_query['passwd']);
             C('cms:user:cleanToken',$userinfo['id'],true);
         }else {
@@ -267,7 +267,7 @@ class cms_user {
             E('账号未启用');
             Return array('error'=>3,'msg'=>'账号未启用');
         }
-        if(!empty($passwd)) {
+        if($passwd!=='' && $passwd!==null && $passwd!==false) {
             $passwd=C('this:user:passwd2md5',trim($passwd));
             if($userinfo['passwd']!==$passwd) {
                 E('密码不正确');

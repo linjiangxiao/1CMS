@@ -694,7 +694,7 @@ class admin {
             if(!is_hash($_POST['userhash'])){
                 Return E('用户名格式不正确');
             }
-            if(empty($_POST['passwd'])) {
+            if($_POST['passwd']==='') {
                 Return E('请填写密码');
             }
             $check=C('cms:user:checkUser',$_POST['userhash'],$_POST['passwd']);
