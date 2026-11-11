@@ -190,7 +190,7 @@ input:disabled,textarea:disabled{color: #ccc;cursor:not-allowed}
 .layui-form-item-width-auto .layui-form-select .layui-input{width:100%;}
 @media screen and (max-width: 666px) {
     .layui-fluid{width:98%;padding:10px 1%;overflow:hidden}
-    .layui-card-header{padding: 0 5px;}
+    .layui-card-header{padding: 5px;}
     .layui-card-body{padding: 10px 5px;}
     .layui-layout-admin .layui-footer{padding:0;border-top:1px solid #ccc}
     .layui-layout-admin .layui-footer .layui-btn{height: 30px;line-height: 30px;padding: 0 10px;font-size: 12px;}
