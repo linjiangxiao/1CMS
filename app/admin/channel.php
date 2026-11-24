@@ -36,8 +36,8 @@ class admin_channel {
         if(!$array['classinfo']=C('cms:class:get',$_GET['classhash'])) {
             Return E('应用未安装');
         }
-        if(!$array['classinfo']['installed']) {Return E($_GET['classhash'].' 应用未安装');}
-        if(!$array['classinfo']['module']) {Return E('此应用['.$_GET['classhash'].'] 未开启模型配置选项');}
+        if(!$array['classinfo']['installed']) {Return E(htmlspecialchars($_GET['classhash']).' 应用未安装');}
+        if(!$array['classinfo']['module']) {Return E('此应用['.htmlspecialchars($_GET['classhash']).'] 未开启模型配置选项');}
         if($maxshow=C('this:channel:maxshow',$array['classinfo']['hash'])) {
             $array['showpage']=1;
             $array['showsearch']=1;

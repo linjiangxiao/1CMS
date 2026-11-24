@@ -18,10 +18,10 @@ class admin_module {
             Return E('未安装模板应用');
         }
         if(!$class=C('cms:class:get',$_GET['classhash'])) {
-            Return E($_GET['classhash'].' 应用未安装');
+            Return E(htmlspecialchars($_GET['classhash']).' 应用未安装');
         }
-        if(!$class['installed']) {Return E($_GET['classhash'].' 应用未安装');}
-        if(!$class['module']) {Return E('此应用['.$_GET['classhash'].'] 未开启模型配置选项');}
+        if(!$class['installed']) {Return E(htmlspecialchars($_GET['classhash']).' 应用未安装');}
+        if(!$class['module']) {Return E('此应用['.htmlspecialchars($_GET['classhash']).'] 未开启模型配置选项');}
         $array['modulelist']=C('cms:module:all',$_GET['classhash']);
         $array['classhash']=$class['hash'];
         $array['classname']=$class['classname'];
