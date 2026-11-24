@@ -1183,12 +1183,17 @@ function cms_template($template_config) {
     if(!isset($GLOBALS['C']['template_var']['br'])) {$GLOBALS['C']['template_var']['br']="\n";}
     $GLOBALS['C']['template_var']['this']=$template_config['class'];
     $GLOBALS['C']['template_var']['template']=$template_config['httpdir'];
-    $GLOBALS['C']['system_syntax'][1][]='else';
-    $GLOBALS['C']['system_syntax'][2][]='}else{';
-    $GLOBALS['C']['system_syntax'][1][]='/if';
-    $GLOBALS['C']['system_syntax'][2][]='}';
-    $GLOBALS['C']['system_syntax'][1][]='/loop';
-    $GLOBALS['C']['system_syntax'][2][]='}';
+    if(!isset($GLOBALS['C']['system_syntax'][1]) || !is_array($GLOBALS['C']['system_syntax'][1])) {
+        $GLOBALS['C']['system_syntax'][1]=array();
+        $GLOBALS['C']['system_syntax'][2]=array();
+    }
+    $system_syntax_default=array('else'=>'}else{','/if'=>'}','/loop'=>'}');
+    foreach($system_syntax_default as $system_syntax_key=>$system_syntax_val) {
+        if(!in_array($system_syntax_key,$GLOBALS['C']['system_syntax'][1],true)) {
+            $GLOBALS['C']['system_syntax'][1][]=$system_syntax_key;
+            $GLOBALS['C']['system_syntax'][2][]=$system_syntax_val;
+        }
+    }
     $nofunction_array=array('if','return','new','switch','function','try');
     preg_match_all('/{[^ {}][^{}]*}/U',$templatecontent,$templist);
     foreach($templist[0] as $key=>$thistemp) {
