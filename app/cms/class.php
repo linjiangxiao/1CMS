@@ -1116,14 +1116,16 @@ class cms_class {
         }elseif(count($functions)==3){
             $classhash=$functions[0];
             $classname=$classhash.'_'.$functions[1];
-            if(!is_hash($classhash)){
+            if(!is_hash($classhash) || !is_hash($functions[1])){
                 return $empty;
             }
             $functionfile=classDir($classhash).$functions[1].'.php';
             $functionname=$functions[2];
             if(!class_exists($classhash.'_'.$functions[1])) {
                 if(is_file($functionfile)) {
-                    include_once($functionfile);
+                    if(preg_match('/\bclass\s+'.preg_quote($classname,'/').'\b/i',@file_get_contents($functionfile))) {
+                        include_once($functionfile);
+                    }
                 }
                 if(!class_exists($classhash.'_'.$functions[1])) {
                     return $empty;
