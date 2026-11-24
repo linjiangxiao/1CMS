@@ -209,12 +209,21 @@ class admin_class {
         $markdown=file_get_contents(classDir($classhash).$file);
         $pattern = '/]\((?!https?:\/\/|ftp:\/\/|\/\/)([^\s)]+)(?: "([^"]*)")?\)/i';
         preg_match_all($pattern, $markdown, $matches);
-        if(isset($_GET['path'])){
+        if(isset($_GET['path']) && is_string($_GET['path'])){
             $path=$_GET['path'];
         }else{
             $path='';
         }
-        $paths=array_filter(explode(';',$path));
+        $paths=array();
+        foreach(explode(';',$path) as $this_path){
+            if($this_path==='' || strpos($this_path,'..')!==false){
+                continue;
+            }
+            if(!preg_match('/^\/?[\p{L}\p{N}_\-.]+(\/[\p{L}\p{N}_\-.]+)*$/u',$this_path)){
+                continue;
+            }
+            $paths[]=$this_path;
+        }
         $filepath=array_values(array_filter(explode('/',$file)));
         unset($filepath[count($filepath)-1]);
         $filepath=array_values($filepath);
@@ -248,10 +257,15 @@ class admin_class {
                 $thislinkpath[]=$thispath;
             }
             $thislinkpath[]=$newmatch;
+            $fileurl=implode('/',array_map('rawurlencode',explode('/',$newmatch)));
             if(strtolower(substr($match,-3))=='.md'){
-                $href='?do=admin:class:readme&classhash='.$classhash.'&file='.$newmatch.'&path='.implode(';',$thislinkpath);
+                $pathurl=array();
+                foreach($thislinkpath as $this_link){
+                    $pathurl[]=implode('/',array_map('rawurlencode',explode('/',$this_link)));
+                }
+                $href='?do=admin:class:readme&classhash='.$classhash.'&file='.$fileurl.'&path='.implode(';',$pathurl);
             }else{
-                $href=$GLOBALS['C']['SystemDir'].$GLOBALS['C']['ClassDir'].'/'.$classhash.$newmatch;
+                $href=$GLOBALS['C']['SystemDir'].$GLOBALS['C']['ClassDir'].'/'.$classhash.$fileurl;
             }
             $markdown=str_replace(']('.$match,"](".$href,$markdown);
         }
@@ -277,6 +291,9 @@ class admin_class {
             $array['breadcrumb'][]=array('url'=>'','title'=>'README');
         }
         $array['content']=C('cms:common:markdown',$markdown);
+        if(!$array['content'] || $array['content']==='markdown error'){
+            $array['content']=nl2br($markdown);
+        }
         Return V('class_readme',$array);
     }
     function permission() {
