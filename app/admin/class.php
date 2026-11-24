@@ -196,8 +196,8 @@ class admin_class {
         }
         if(isset($_GET['file'])){
             $file=$_GET['file'];
-            if(stripos($file,'..') || !stripos($file,'.md')){
-                return false;
+            if(!is_string($file) || stripos($file,'..')!==false || !preg_match('/\.md$/i',$file)){
+                return E('文档不存在');
             }
             if(!is_file(classDir($classhash).$file)) {
                 return E('文档不存在');
