@@ -155,6 +155,16 @@ class admin_user {
     }
     function editPost() {
         if($user=C('cms:user:get',@$_POST['hash'])){
+            $nowuser=C('cms:user:get',C('this:nowUser'));
+            if(!C('this:user:superAdmin',$nowuser['rolehash']) && !empty($user['rolehash'])) {
+                $my_role_array=explode(';',$nowuser['rolehash']);
+                $user_rolehash_array=explode(';',$user['rolehash']);
+                foreach($user_rolehash_array as $this_role) {
+                    if(!in_array($this_role,$my_role_array) && !empty($this_role)) {
+                        Return E('没有权限修改此账号');
+                    }
+                }
+            }
             $user_edit_array=array();
             $user_edit_array['hash']=$_POST['hash'];
             $user_edit_array['username']=trim($_POST['username']);
@@ -165,8 +175,6 @@ class admin_user {
                 Return E('该昵称已被使用');
             }
             $user_edit_array['enabled']=C('cms:input:post',array('inputhash'=>'switch','name'=>'enabled'));
-            
-            $nowuser=C('cms:user:get',C('this:nowUser'));
             if(!C('this:user:superAdmin',$nowuser['rolehash'])) {
                 $user_edit_array['rolehash']=C('cms:input:post',array('inputhash'=>'rolecheckbox','name'=>'rolehash','showdisabled'=>1,'rolehash'=>$nowuser['rolehash']));
                 if(!empty($user_edit_array['rolehash'])) {
